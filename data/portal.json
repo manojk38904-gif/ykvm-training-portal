@@ -29,7 +29,7 @@
     "मुख्य फसलें"
    ],
    "about": "जीवामृत, घनजीवामृत, बीजामृत, प्राकृतिक कीटनाशक बनाना और देसी गाय आधारित खेती।",
-   "discount": 10999,
+   "discount": 5340,
    "discountType": "amount",
    "payLink": "",
    "payLinkAmount": null
@@ -49,7 +49,7 @@
     "कृषि भूमि (बीघा में)"
    ],
    "about": "बाँस, तार और जाली से मल्टीलेयर ढाँचा, कम ज़मीन में चार परतों की सब्ज़ी।",
-   "discount": 8000,
+   "discount": 5340,
    "discountType": "amount",
    "payLink": "",
    "payLinkAmount": null
@@ -63,11 +63,11 @@
    "duration": "5 दिवस",
    "active": true,
    "batches": [
-    "बैच-1 : 03 नवम्बर – 07 नवम्बर 2026"
+    "बैच-1 : 26 अक्टूबर  – 30  अक्टूबर  2026"
    ],
    "extra": [],
    "about": "ऑयस्टर मशरूम की बैग विधि, स्पॉन, नमी प्रबंधन और बाज़ार तक बिक्री।",
-   "discount": 10999,
+   "discount": 5340,
    "discountType": "amount",
    "payLink": "",
    "payLinkAmount": null
@@ -127,7 +127,7 @@
     "अंतिम पास कक्षा / डिग्री"
    ],
    "about": "कंप्यूटर संचालन, MS Office, इंटरनेट, ई-मेल और डिजिटल भुगतान।",
-   "discount": 5340,
+   "discount": 1000,
    "discountType": "amount",
    "payLink": "",
    "payLinkAmount": null
