@@ -1,0 +1,1401 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="युवा कौशल विकास मण्डल, हमीरपुर: प्रशिक्षण आवेदन, शुल्क भुगतान, रसीद व प्रमाण पत्र सत्यापन">
+<link rel="icon" href="img/logo.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>YKVM प्रशिक्षण पोर्टल</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Mukta:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: left rail (logo + fee payment desk + verify) beside a tabbed main column; rail stacks on top at phone width */
+:root{
+  --bg:#F5F7F1; --surface:#FFFFFF; --sunk:#ECF0E8; --ink:#13302C; --muted:#56685F; --line:#D8DFD4;
+  --accent:#DE8611; --accent-ink:#1E1404; --accent-soft:#FCEBD2; --teal:#0E7681; --teal-soft:#DDF0F1;
+  --leaf:#4C862C; --danger:#B3261E; --danger-soft:#FBE3E1; --ok:#2E7D32; --ok-soft:#E1F2E2;
+  --f-display:"Tiro Devanagari Hindi", "Noto Serif Devanagari", Georgia, serif;
+  --f-body:"Mukta", "Noto Sans Devanagari", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1816; --surface:#15221F; --sunk:#1B2B27; --ink:#E6EEE9; --muted:#9BAFA7; --line:#2A3B36;
+  --accent:#F0A23A; --accent-ink:#1E1404; --accent-soft:#3A2A12; --teal:#4FB7C0; --teal-soft:#123437;
+  --leaf:#86C062; --danger:#F08C84; --danger-soft:#3D1D1A; --ok:#7FCB83; --ok-soft:#173219; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1816; --surface:#15221F; --sunk:#1B2B27; --ink:#E6EEE9; --muted:#9BAFA7; --line:#2A3B36;
+  --accent:#F0A23A; --accent-ink:#1E1404; --accent-soft:#3A2A12; --teal:#4FB7C0; --teal-soft:#123437;
+  --leaf:#86C062; --danger:#F08C84; --danger-soft:#3D1D1A; --ok:#7FCB83; --ok-soft:#173219; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.6}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;line-height:1.25;text-wrap:balance;margin:0}
+h2{font-size:1.75rem} h3{font-size:1.25rem}
+p{margin:0}
+a{color:var(--teal)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;max-width:1280px;margin:0 auto;padding-inline:20px;padding-block:20px 48px}
+@media (max-width:900px){.shell{grid-template-columns:minmax(0,1fr);padding-inline:16px}}
+
+/* rail */
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);align-self:start;display:flex;flex-direction:column;gap:16px}
+@media (max-width:900px){.rail{position:static}}
+.brand{display:flex;gap:12px;align-items:center}
+.brand img{width:64px;height:64px;object-fit:contain;border-radius:12px;background:#fff}
+.brand b{font-family:var(--f-display);font-weight:400;font-size:1.3rem;display:block;line-height:1.2}
+.brand small{color:var(--muted);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.paydesk{background:var(--ink);color:var(--bg);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.paydesk h3{color:var(--bg)}
+.paydesk p{font-size:.92rem;opacity:.85}
+.paydesk ol{margin:0;padding-left:1.2em;font-size:.9rem;opacity:.9;display:grid;gap:2px}
+.railbill{display:grid;gap:4px;font-size:.92rem;border-top:1px solid color-mix(in srgb, var(--bg) 25%, transparent);padding-top:10px}
+.railbill div{display:flex;justify-content:space-between;gap:10px}
+.railbill .v{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.railbill .tot{font-weight:700;font-size:1.05rem;color:var(--accent)}
+.disclist{display:grid;gap:12px}
+.discrow{border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:12px;background:var(--surface)}
+.discrow .dh{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.discrow .dh b{font-size:1.05rem}
+.discrow .dg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
+.discrow input{font-family:var(--f-mono);font-size:1.05rem}
+.discrow .pct{color:var(--leaf)}
+.discrow .out{font-family:var(--f-mono);font-size:1.3rem;font-weight:700;padding:6px 0}
+.sumgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.sumgrid div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:2px}
+.sumgrid b{font-family:var(--f-mono);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.sumgrid span{font-size:.85rem;color:var(--muted)}
+.railbox{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;font-size:.92rem}
+.railbox .k{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
+
+/* buttons */
+.btn{appearance:none;border:0;border-radius:999px;padding:10px 18px;font:600 .98rem var(--f-body);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;line-height:1.2}
+.btn-accent{background:var(--accent);color:var(--accent-ink)}
+.btn-accent:hover{filter:brightness(1.06)}
+.btn-ghost{background:transparent;color:inherit;border:1.5px solid currentColor}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-soft{background:var(--sunk);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.tab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn-sm{padding:6px 12px;font-size:.88rem}
+
+/* tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--line);margin-bottom:24px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;padding-block:10px 0}
+.tab{appearance:none;background:none;border:0;font:600 1rem var(--f-body);color:var(--muted);padding:8px 14px 10px;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tab.admin{color:var(--teal)}
+main{min-width:0}
+section.view{display:flex;flex-direction:column;gap:36px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:center}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(2rem,4.2vw,3.1rem)}
+.hero .en{font-family:var(--f-mono);font-size:.8rem;letter-spacing:.14em;color:var(--teal);text-transform:uppercase}
+.hero .lede{font-size:1.08rem;color:var(--muted);max-width:60ch}
+.mosaic{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:150px 150px;gap:8px}
+.mosaic img{width:100%;height:100%;object-fit:cover;border-radius:var(--r)}
+.mosaic img:first-child{grid-row:span 2}
+.factline{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.9rem;color:var(--muted)}
+.factline b{color:var(--ink);font-weight:600}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.eyebrow{font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.muted{color:var(--muted)}
+.kv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);border-top:1px solid var(--line)}
+.kv>div{padding:9px 0;border-bottom:1px solid var(--line);font-size:.95rem;min-width:0;overflow-wrap:anywhere}
+.kv>div:nth-child(odd){color:var(--muted);padding-right:12px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;background:var(--sunk)}
+tr:last-child td{border-bottom:0}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--sunk);border-radius:999px;padding:3px 11px;font-size:.88rem}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.gallery figure{margin:0;display:flex;flex-direction:column;gap:4px}
+.gallery img{aspect-ratio:4/3;object-fit:cover;width:100%;border-radius:var(--r)}
+.gallery figcaption{font-size:.82rem;color:var(--muted)}
+.chief{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:start}
+.chief img{width:150px;border-radius:12px;aspect-ratio:4/5;object-fit:cover}
+@media (max-width:520px){.chief{grid-template-columns:minmax(0,1fr)}}
+.story{border-left:3px solid var(--leaf);padding-left:14px;display:grid;gap:4px}
+
+/* trades */
+.trades{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.trade{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.trade .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.trade .fee{font-family:var(--f-mono);font-weight:600;font-size:1.05rem;color:var(--accent)}
+.trade .code{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);letter-spacing:.08em}
+.trade ul{margin:0;padding-left:1.1em;font-size:.88rem;color:var(--muted)}
+.trade .btn{margin-top:auto;align-self:flex-start}
+
+/* steps */
+.steps{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.92rem}
+.steps span{display:flex;gap:6px;align-items:center;color:var(--muted)}
+.steps span i{font-style:normal;width:24px;height:24px;border-radius:50%;display:inline-grid;place-items:center;background:var(--sunk);font-family:var(--f-mono);font-size:.8rem}
+.steps span.on{color:var(--ink);font-weight:600}
+.steps span.on i{background:var(--accent);color:var(--accent-ink)}
+.steps span.done i{background:var(--leaf);color:#fff}
+form, .form{display:grid;gap:14px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+label.f{display:grid;gap:5px;font-size:.92rem;font-weight:600;min-width:0}
+label.f span.req::after{content:" *";color:var(--danger)}
+input,select,textarea{font:400 1rem var(--f-body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:9px;padding:9px 11px;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);outline:none}
+textarea{min-height:64px;resize:vertical}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.93rem}
+.check input{width:auto;margin-top:5px}
+.note{border-radius:10px;padding:12px 14px;font-size:.93rem;background:var(--teal-soft)}
+.note.warn{background:var(--accent-soft)}
+.note.err{background:var(--danger-soft);color:var(--danger)}
+.note.ok{background:var(--ok-soft)}
+.paybox{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+@media (max-width:700px){.paybox{grid-template-columns:minmax(0,1fr)}}
+.bill{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.bill>div{display:flex;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line)}
+.bill>div:last-child{border-bottom:0}
+.bill .v{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.bill .disc .v{color:var(--leaf)}
+.bill .total{background:var(--accent-soft)}
+.bill .total span:first-child{font-weight:700}
+.bill .total .v{font-size:1.45rem;color:var(--ink)}
+.trade .was{font-family:var(--f-mono);font-size:.85rem;color:var(--muted);text-decoration:line-through;margin-right:6px}
+.canvasview{width:100%;border-radius:10px;border:1px solid var(--line);background:#fff;display:block}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.status{font-size:.9rem;min-height:1.4em}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:.8rem;font-weight:600}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.bad{background:var(--danger-soft);color:var(--danger)}
+.tradeedit{display:grid;gap:10px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--surface)}
+footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:var(--muted);display:grid;gap:4px}
+@media (prefers-reduced-motion:no-preference){.view{animation:fade .25s ease}@keyframes fade{from{opacity:.4}to{opacity:1}}}
+</style>
+
+<div class="shell">
+  <aside class="rail" aria-label="शुल्क भुगतान व सत्यापन">
+    <div class="brand">
+      <img src="img/logo.png" alt="YKVM प्रतीक चिन्ह">
+      <div><b>युवा कौशल विकास मण्डल</b><small>Hamirpur · U.P. · Since 2014</small></div>
+    </div>
+    <div class="paydesk">
+      <h3>प्रशिक्षण शुल्क भुगतान</h3>
+      <p>ट्रेड और बैच चुनें, आवेदन फॉर्म भरें, फिर Razorpay से शुल्क जमा करें।</p>
+      <label class="f" style="color:var(--bg)"><span>प्रशिक्षण ट्रेड चुनें</span><select id="railTrade"><option value="">— ट्रेड चुनें —</option></select></label>
+      <div class="railbill" id="railBill" hidden></div>
+      <button class="btn btn-accent" type="button" id="railGo">आवेदन भरें और भुगतान करें</button>
+      <ol><li>ट्रेड व बैच चुनें</li><li>आवेदन फॉर्म भरें</li><li>Razorpay से भुगतान</li><li>रसीद प्राप्त करें</li></ol>
+    </div>
+    <div class="railbox">
+      <span class="k">प्रमाण पत्र</span>
+      <span>कोड, सीरियल नंबर और पंजीकरण संख्या से प्रमाण पत्र की जाँच करें।</span>
+      <button class="btn btn-ghost btn-sm" type="button" data-go="verify">अपना सर्टिफिकेट जाँचें</button>
+    </div>
+    <div class="railbox">
+      <span class="k">संपर्क</span>
+      <span>मनोज कुमार कुशवाहा, सचिव</span>
+      <span class="mono">+91 84000 32827</span>
+      <span class="mono">05284-298670</span>
+      <span class="mono" style="overflow-wrap:anywhere">yuvak22814@gmail.com</span>
+      <a href="https://ykvmup.org" target="_blank" rel="noopener">ykvmup.org</a>
+    </div>
+  </aside>
+
+  <main>
+    <nav class="tabs" role="tablist" aria-label="पोर्टल अनुभाग">
+      <button class="tab" role="tab" id="t-profile" data-tab="profile" aria-selected="true">संस्था परिचय</button>
+      <button class="tab" role="tab" id="t-courses" data-tab="courses" aria-selected="false">प्रशिक्षण कार्यक्रम</button>
+      <button class="tab" role="tab" id="t-apply" data-tab="apply" aria-selected="false">आवेदन व भुगतान</button>
+      <button class="tab" role="tab" id="t-verify" data-tab="verify" aria-selected="false">प्रमाण पत्र जाँचें</button>
+      <button class="tab admin" role="tab" id="t-admin" data-tab="admin" aria-selected="false" hidden>प्रबंधन</button>
+    </nav>
+
+    <!-- PROFILE -->
+    <section class="view" id="v-profile">
+      <div class="hero">
+        <div style="display:grid;gap:14px">
+          <span class="en">Yuva Kaushal Vikas Mandal · Training Profile 2026-27</span>
+          <h1>गाँव के युवाओं, महिलाओं और किसानों के हुनर से आत्मनिर्भरता</h1>
+          <p class="lede">युवा कौशल विकास मण्डल 2014 से हमीरपुर (उ.प्र.) में प्राकृतिक खेती, जलागम विकास, पशुपालन, स्वयं सहायता समूह और कौशल प्रशिक्षण के ज़रिए ग्रामीण परिवारों की आजीविका मज़बूत कर रहा है।</p>
+          <div class="row"><button class="btn btn-accent" type="button" data-go="courses">प्रशिक्षण देखें</button><button class="btn btn-soft" type="button" data-go="apply">आवेदन करें</button></div>
+          <div class="factline"><span>पंजीकरण <b class="mono">356/2014-15</b></span><span>NGO दर्पण <b class="mono">UP/2018/0184056</b></span><span>CSR <b class="mono">CSR00000521</b></span></div>
+        </div>
+        <div class="mosaic">
+          <img src="img/vwc-training.jpg" alt="VWC प्रशिक्षण कार्यक्रम">
+          <img src="img/multilayer.jpg" alt="मल्टीलेयर खेती में किसान">
+          <img src="img/goat.jpg" alt="बकरी पालन इकाई">
+        </div>
+      </div>
+
+      <div class="two">
+        <div class="panel"><span class="eyebrow">परिकल्पना · Vision</span>
+          <p>एक ऐसा सशक्त, आत्मनिर्भर और समावेशी ग्रामीण समाज, जहाँ हर व्यक्ति को शिक्षा, स्वास्थ्य, आजीविका और विकास के समान अवसर मिलें।</p>
+          <p class="muted">Empowered, self-reliant rural communities where women and marginalized groups have equal access to education, livelihoods, healthcare and development.</p></div>
+        <div class="panel"><span class="eyebrow">उद्देश्य · Mission</span>
+          <p>ग्रामीण एवं वंचित समुदायों के सामाजिक-आर्थिक विकास हेतु शिक्षा, कौशल विकास, महिला सशक्तिकरण, स्वास्थ्य जागरूकता और सतत आजीविका के अवसर देना।</p>
+          <p class="muted">Skill development, women empowerment, education, health awareness, sustainable agriculture and livelihood opportunities.</p></div>
+      </div>
+
+      <div class="two">
+        <div class="panel"><span class="eyebrow">संस्था विवरण</span>
+          <div class="kv">
+            <div>संस्था का नाम</div><div>युवा कौशल विकास मण्डल, हमीरपुर</div>
+            <div>प्रकार</div><div>गैर-सरकारी संस्था (सोसाइटी अधिनियम 1860)</div>
+            <div>पंजीकरण सं. व तिथि</div><div class="mono">356/2014-15 · 22-08-2014</div>
+            <div>NGO दर्पण ID</div><div class="mono">UP/2018/0184056</div>
+            <div>PAN</div><div class="mono">AAAAY3865G</div>
+            <div>12A</div><div class="mono">AAAAY3865G25LK01</div>
+            <div>80G</div><div class="mono">AAAAY3865G25LK02</div>
+            <div>CSR पंजीकरण</div><div class="mono">CSR00000521</div>
+            <div>ESI कोड</div><div class="mono">21001095880000999</div>
+            <div>कार्य क्षेत्र</div><div>सम्पूर्ण उत्तर प्रदेश</div>
+          </div></div>
+        <div class="panel"><span class="eyebrow">कार्यालय</span>
+          <div class="kv">
+            <div>पंजीकृत कार्यालय</div><div>ग्राम टिंडुही, पोस्ट मकरांव, तहसील मौदहा, जिला हमीरपुर (उ.प्र.) 210507</div>
+            <div>प्रशासनिक कार्यालय</div><div>प्रज्ञा पीठ तेवन बाबा, मराठीपुरा, मौदहा, हमीरपुर (उ.प्र.) 210507</div>
+          </div>
+          <span class="eyebrow" style="margin-top:8px">वार्षिक टर्नओवर</span>
+          <div class="tablewrap"><table><thead><tr><th>वित्तीय वर्ष</th><th style="text-align:right">राशि (₹)</th></tr></thead><tbody>
+            <tr><td class="mono">2022-23</td><td class="num mono">1,05,78,862</td></tr>
+            <tr><td class="mono">2023-24</td><td class="num mono">1,05,48,129</td></tr>
+            <tr><td class="mono">2024-25</td><td class="num mono">1,17,55,280</td></tr>
+          </tbody></table></div></div>
+      </div>
+
+      <div class="panel"><span class="eyebrow">मुख्य कार्य क्षेत्र</span>
+        <div class="chips">
+          <span class="chip">महिला सशक्तिकरण</span><span class="chip">पंचायती राज</span><span class="chip">स्वास्थ्य व स्वच्छता</span><span class="chip">जलागम विकास</span><span class="chip">जलवायु परिवर्तन</span><span class="chip">जल संचयन</span><span class="chip">FPO गठन व प्रोत्साहन</span><span class="chip">आजीविका व उद्यमिता</span><span class="chip">प्राकृतिक खेती</span><span class="chip">स्वयं सहायता समूह</span>
+        </div></div>
+
+      <div class="panel">
+        <span class="eyebrow">मुख्य कार्यकारी</span>
+        <div class="chief"><img src="img/chief.jpg" alt="मनोज कुमार कुशवाहा">
+          <div style="display:grid;gap:8px"><h3>मनोज कुमार कुशवाहा</h3><p class="muted">सचिव / प्रबंधक · MSW</p>
+            <p>MSW के बाद मनोज कुशवाहा ने संस्था के माध्यम से किसानों, युवाओं, महिलाओं और बच्चों के लिए अनेक कार्यक्रम चलाए हैं। प्रेरणा, मानव संसाधन, कंप्यूटर और लेखा कार्य का अनुभव रखते हैं। नाबार्ड व अन्य विभागों के सहयोग से ग्रामीण महिलाओं की आजीविका सुधार उनका प्रमुख कार्य है।</p></div></div>
+      </div>
+
+      <div class="panel"><span class="eyebrow">प्रबंध कार्यकारिणी</span>
+        <div class="tablewrap"><table><thead><tr><th>नाम</th><th>पद</th><th>योग्यता</th></tr></thead><tbody>
+          <tr><td>पुष्पेन्द्र कुमार</td><td>अध्यक्ष</td><td>परास्नातक</td></tr>
+          <tr><td>अरविन्द कुमार</td><td>उपाध्यक्ष</td><td>परास्नातक</td></tr>
+          <tr><td>मनोज कुमार कुशवाहा</td><td>सचिव / प्रबंधक</td><td>परास्नातक</td></tr>
+          <tr><td>अनिल कुमार</td><td>उप सचिव</td><td>परास्नातक</td></tr>
+          <tr><td>प्रमोद कुमार</td><td>लेखा परीक्षक</td><td>परास्नातक</td></tr>
+          <tr><td>विजय बहादुर</td><td>कोषाध्यक्ष</td><td>स्नातक</td></tr>
+          <tr><td>अरविन्द कुमार, राम कुमार, हंसराज, शिव करन, देवीदयाल</td><td>सदस्य</td><td>स्नातक</td></tr>
+        </tbody></table></div>
+        <p class="muted" style="font-size:.9rem">स्टाफ: निदेशक 1 · कार्यक्रम प्रबंधक 1 · प्रशासन/HR 1 · लेखा अधिकारी 1 · परियोजना समन्वयक 3 (स्वास्थ्य, आजीविका, शिक्षा) · फील्ड स्टाफ 23</p>
+      </div>
+
+      <div class="panel"><span class="eyebrow">सफलता की कहानियाँ</span>
+        <div class="two">
+          <div class="story"><h3>चुन्नी देवी, गुरदहा</h3><p class="muted">गुरदहा जलागम परियोजना में संस्था की मदद से 30×45 फीट में मल्टीलेयर सब्ज़ी लगाई और लगभग ₹42,600 की बिक्री की, जबकि पहले 2 बीघा से भी इतनी आय नहीं होती थी।</p></div>
+          <div class="story"><h3>रामबाबू, गुरदहा</h3><p class="muted">संस्था से बकरी व प्रशिक्षण मिलने के बाद शेड बनाया, दूध व दुग्ध उत्पाद बेचे और गाँव के युवाओं को भी बेहतर बकरी पालन सिखाया।</p></div>
+          <div class="story"><h3>गुरदहा प्राकृतिक खेती केंद्र</h3><p class="muted">कौशुभ एग्रो FPC के साथ मिलकर बना केंद्र जीवामृत, घनजीवामृत और जैविक खाद बनाकर बेचता है और ज़िले के लगभग 1200 किसानों की आजीविका से जुड़ा है।</p></div>
+        </div></div>
+
+      <div class="panel"><span class="eyebrow">कार्यक्रमों की झलक</span>
+        <div class="gallery">
+          <figure><img src="img/vwc-training.jpg" alt="" loading="lazy"><figcaption>VWC प्रशिक्षण: वित्तीय साक्षरता</figcaption></figure>
+          <figure><img src="img/classroom.jpg" alt="" loading="lazy"><figcaption>कक्षा प्रशिक्षण</figcaption></figure>
+          <figure><img src="img/tent-training.jpg" alt="" loading="lazy"><figcaption>ग्राम स्तरीय प्रशिक्षण</figcaption></figure>
+          <figure><img src="img/seed-event.jpg" alt="" loading="lazy"><figcaption>स्वावलंबन परियोजना: बीज वितरण</figcaption></figure>
+          <figure><img src="img/kvk-visit.jpg" alt="" loading="lazy"><figcaption>किसान एक्सपोज़र विज़िट</figcaption></figure>
+          <figure><img src="img/vermi.jpg" alt="" loading="lazy"><figcaption>जैविक खाद इकाई निरीक्षण</figcaption></figure>
+          <figure><img src="img/compost.jpg" alt="" loading="lazy"><figcaption>प्राकृतिक खेती केंद्र</figcaption></figure>
+          <figure><img src="img/pond.jpg" alt="" loading="lazy"><figcaption>जलागम: तालाब निर्माण</figcaption></figure>
+          <figure><img src="img/field-visit.jpg" alt="" loading="lazy"><figcaption>मल्टीलेयर खेती भ्रमण</figcaption></figure>
+          <figure><img src="img/shed.jpg" alt="" loading="lazy"><figcaption>गौशाला व खाद केंद्र</figcaption></figure>
+        </div>
+        <p class="muted" style="font-size:.9rem">वीडियो देखें: <a href="https://youtube.com/@yuvakaushalvikasmandal3667" target="_blank" rel="noopener">YouTube चैनल</a> · <a href="https://www.facebook.com/profile.php?id=100095365659399" target="_blank" rel="noopener">Facebook</a></p>
+      </div>
+
+      <div class="panel"><span class="eyebrow">सहयोगी संस्थाएँ</span>
+        <div class="chips"><span class="chip">NABARD</span><span class="chip">NABCONS</span><span class="chip">HSBC</span><span class="chip">SRIJAN</span><span class="chip">Development Alternatives</span><span class="chip">Social Alpha</span><span class="chip">ICRISAT</span><span class="chip">IIT कानपुर</span><span class="chip">ICAR</span><span class="chip">KVK</span><span class="chip">नेहरू युवा केन्द्र</span><span class="chip">युवा कार्यक्रम एवं खेल मंत्रालय</span><span class="chip">विज्ञान एवं प्रौद्योगिकी विभाग</span><span class="chip">कृषि विभाग, उ.प्र.</span><span class="chip">HDFC Bank</span><span class="chip">Bandhan Bank</span><span class="chip">वेदमाता गायत्री ट्रस्ट</span></div>
+        <p class="muted" style="font-size:.9rem">सम्मान: नाबार्ड ग्रामीण समृद्धि सम्मान 2020-21 (जलागम व FPO में प्रथम पुरस्कार), नेहरू युवा केन्द्र हमीरपुर द्वारा उत्कृष्ट युवा मण्डल पुरस्कार।</p>
+      </div>
+    </section>
+
+    <!-- COURSES -->
+    <section class="view" id="v-courses" hidden>
+      <div style="display:grid;gap:8px"><span class="eyebrow">सत्र 2026-27</span><h2>प्रशिक्षण कार्यक्रम</h2>
+        <p class="muted">ट्रेड चुनकर सीधे आवेदन करें। आवेदन जमा होते ही भुगतान का लिंक खुल जाएगा।</p></div>
+      <div class="trades" id="tradeCards"><p class="muted">प्रशिक्षण सूची लोड हो रही है…</p></div>
+    </section>
+
+    <!-- APPLY -->
+    <section class="view" id="v-apply" hidden>
+      <div style="display:grid;gap:8px"><span class="eyebrow">आवेदन व शुल्क</span><h2>प्रशिक्षण आवेदन</h2></div>
+      <div class="steps" id="steps">
+        <span data-s="1"><i>1</i>ट्रेड व बैच</span><span data-s="2"><i>2</i>आवेदन फॉर्म</span><span data-s="3"><i>3</i>भुगतान</span><span data-s="4"><i>4</i>रसीद</span>
+      </div>
+
+      <div class="panel" id="s1">
+        <div class="grid2">
+          <label class="f"><span class="req">प्रशिक्षण ट्रेड</span><select id="selTrade"><option value="">— ट्रेड चुनें —</option></select></label>
+        </div>
+        <p class="muted" id="tradeInfo" style="font-size:.93rem">ट्रेड चुनते ही उसका आवेदन फॉर्म नीचे खुल जाएगा।</p>
+      </div>
+
+      <form class="panel" id="s2" hidden novalidate>
+        <h3 id="formTitle">आवेदन फॉर्म</h3>
+        <div class="grid2">
+          <label class="f" style="grid-column:1/-1"><span class="req">प्रशिक्षण बैच चुनें</span><select id="selBatch" disabled><option value="">— पहले ट्रेड चुनें —</option></select></label>
+          <label class="f"><span class="req">प्रशिक्षार्थी का नाम</span><input id="a_name" required autocomplete="name"></label>
+          <label class="f"><span class="req">पिता / पति का नाम</span><input id="a_father" required></label>
+          <label class="f"><span class="req">जन्म तिथि</span><input id="a_dob" type="date" required></label>
+          <label class="f"><span class="req">लिंग</span><select id="a_gender" required><option value="">—</option><option>पुरुष</option><option>महिला</option><option>अन्य</option></select></label>
+          <label class="f"><span class="req">मोबाइल नंबर</span><input id="a_mobile" inputmode="numeric" maxlength="10" required placeholder="10 अंक"></label>
+          <label class="f"><span class="req">ई-मेल (रसीद हेतु)</span><input id="a_email" type="email" required autocomplete="email"></label>
+          <label class="f"><span>श्रेणी</span><select id="a_cat"><option value="">—</option><option>सामान्य</option><option>अन्य पिछड़ा वर्ग</option><option>अनुसूचित जाति</option><option>अनुसूचित जनजाति</option></select></label>
+          <label class="f"><span class="req">शैक्षिक योग्यता</span><input id="a_edu" required placeholder="जैसे: 10वीं, 12वीं, स्नातक"></label>
+          <label class="f"><span class="req">ग्राम / मोहल्ला</span><input id="a_village" required></label>
+          <label class="f"><span>ब्लॉक</span><input id="a_block"></label>
+          <label class="f"><span class="req">जिला</span><input id="a_district" required value="हमीरपुर"></label>
+          <label class="f"><span>पिन कोड</span><input id="a_pin" inputmode="numeric" maxlength="6"></label>
+        </div>
+        <div class="grid2" id="extraFields"></div>
+        <label class="check"><input type="checkbox" id="a_decl" required><span>मैं घोषणा करता/करती हूँ कि दी गई जानकारी सही है और मैं प्रशिक्षण के सभी नियमों का पालन करूँगा/करूँगी।</span></label>
+        <p class="note err" id="formErr" hidden></p>
+        <div class="row"><button class="btn btn-accent" type="submit">आवेदन जमा करें और भुगतान पर जाएँ</button></div>
+      </form>
+
+      <div class="panel" id="s3" hidden>
+        <div class="paybox">
+          <div style="display:grid;gap:10px;align-content:start">
+            <span class="eyebrow">आवेदन जमा हो गया</span>
+            <div class="kv" id="appSummary"></div>
+          </div>
+          <div style="display:grid;gap:12px;align-content:start">
+            <div class="bill" id="bill"></div>
+            <div class="note warn" id="payHint">
+              <b>Razorpay पेज पर राशि खुद भरें:</b>
+              <div class="row" style="margin-top:6px"><span class="mono" id="payHintAmt" style="font-size:1.35rem;font-weight:600"></span><button class="btn btn-soft btn-sm" type="button" id="btnCopyAmt">राशि कॉपी करें</button></div>
+              <span style="font-size:.88rem">इससे कम या ज़्यादा राशि भरने पर रसीद मान्य नहीं होगी।</span>
+            </div>
+            <a class="btn btn-accent" id="payLink" href="#" target="_blank" rel="noopener">Razorpay से भुगतान करें</a>
+            <p class="muted" style="font-size:.88rem">Razorpay पेज पर UPI, कार्ड, नेट बैंकिंग या वॉलेट से भुगतान करें। भुगतान पूरा होने पर Razorpay आपको Payment ID (जैसे <span class="mono">pay_XXXXXXXX</span>) दिखाता है और SMS/ई-मेल भेजता है।</p>
+            <label class="f"><span class="req">Razorpay Payment ID</span><input id="payId" class="mono" placeholder="pay_..."></label>
+            <label class="f"><span class="req">भुगतान तिथि</span><input id="payDate" type="date"></label>
+            <p class="note err" id="payErr" hidden></p>
+            <button class="btn btn-teal" type="button" id="btnReceipt">रसीद बनाएँ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="s4" hidden>
+        <span class="eyebrow">शुल्क रसीद</span>
+        <img class="canvasview" id="receiptImg" alt="शुल्क रसीद">
+        <div class="row">
+          <button class="btn btn-accent" type="button" id="btnReceiptPdf">रसीद PDF सहेजें</button>
+          <a class="btn btn-teal" id="waLink" href="#" target="_blank" rel="noopener">आवेदन व रसीद WhatsApp पर संस्था को भेजें</a>
+          <button class="btn btn-soft" type="button" id="btnNewApp">नया आवेदन</button>
+        </div>
+        <p class="status" id="rcptStatus"></p>
+        <p class="note" id="mailNote"></p>
+      </div>
+    </section>
+
+    <!-- VERIFY -->
+    <section class="view" id="v-verify" hidden>
+      <div style="display:grid;gap:8px"><span class="eyebrow">ऑनलाइन सत्यापन</span><h2>अपना सर्टिफिकेट जाँचें</h2>
+        <p class="muted">प्रमाण पत्र के नीचे छपे सत्यापन कोड, सीरियल नंबर और पंजीकरण संख्या डालें।</p></div>
+      <form class="panel" id="verifyForm" novalidate>
+        <div class="grid2">
+          <label class="f"><span class="req">सत्यापन कोड</span><input id="v_code" class="mono" placeholder="ABCD-2345"></label>
+          <label class="f"><span class="req">सीरियल नंबर</span><input id="v_serial" class="mono" placeholder="YKVM/NF/2026/0001"></label>
+          <label class="f"><span class="req">पंजीकरण संख्या</span><input id="v_reg" class="mono"></label>
+        </div>
+        <div class="row"><button class="btn btn-accent" type="submit">जाँचें</button></div>
+      </form>
+      <div id="verifyOut"></div>
+    </section>
+
+    <!-- ADMIN -->
+    <section class="view" id="v-admin" hidden>
+      <div style="display:grid;gap:8px"><span class="eyebrow">केवल संस्था के लिए</span><h2>प्रबंधन</h2></div>
+      <div class="row" role="tablist" aria-label="प्रबंधन">
+        <button class="btn btn-sm btn-teal" type="button" data-sub="gen">प्रमाण पत्र बनाएँ</button>
+        <button class="btn btn-sm btn-soft" type="button" data-sub="disc">ट्रेड वाइज छूट व भुगतान</button>
+        <button class="btn btn-sm btn-soft" type="button" data-sub="apps">रिपोर्ट, रजिस्टर व Excel</button>
+        <button class="btn btn-sm btn-soft" type="button" data-sub="reg">प्रमाण पत्र रजिस्टर</button>
+        <button class="btn btn-sm btn-soft" type="button" data-sub="cfg">प्रशिक्षण, बैच व सेटिंग</button>
+      </div>
+
+      <div id="sub-gen" class="form">
+        <div class="panel">
+          <h3>1. प्रशिक्षण का विवरण</h3>
+          <div class="grid2">
+            <label class="f"><span class="req">ट्रेड</span><select id="g_trade"></select></label>
+            <label class="f"><span class="req">बैच का नाम</span><input id="g_batch" list="g_batchlist"><datalist id="g_batchlist"></datalist></label>
+            <label class="f"><span class="req">अवधि</span><input id="g_duration" placeholder="जैसे: 7 दिवस"></label>
+            <label class="f"><span class="req">प्रारम्भ तिथि</span><input id="g_start" type="date"></label>
+            <label class="f"><span class="req">समापन तिथि</span><input id="g_end" type="date"></label>
+            <label class="f"><span class="req">जारी करने की तिथि</span><input id="g_issue" type="date"></label>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>2. प्रशिक्षार्थियों की Excel शीट</h3>
+          <p class="muted" style="font-size:.93rem">कॉलम: <b>पंजीकरण संख्या</b> (ऑनलाइन आवेदक की आवेदन संख्या डालें, ताकि रिपोर्ट में आवेदन से मिलान हो), <b>नाम</b>, <b>पिता/पति का नाम</b>, <b>ग्राम/पता</b>, ग्रेड (वैकल्पिक), मोबाइल (वैकल्पिक, प्रमाण पत्र पर नहीं छपता)। पहली पंक्ति में शीर्षक हों।</p>
+          <div class="row">
+            <button class="btn btn-soft btn-sm" type="button" id="btnTemplate">नमूना Excel शीट सहेजें</button>
+            <label class="btn btn-teal btn-sm" for="g_file">Excel / CSV चुनें</label>
+            <input type="file" id="g_file" accept=".xlsx,.xls,.csv" hidden>
+            <span class="muted" id="g_fname" style="font-size:.9rem"></span>
+          </div>
+          <div id="g_preview"></div>
+        </div>
+        <div class="panel">
+          <h3>3. जारी करें</h3>
+          <p class="muted" style="font-size:.93rem">"जारी करें" दबाने पर हर प्रशिक्षार्थी को सीरियल नंबर व सत्यापन कोड मिलेगा, रिकॉर्ड सत्यापन रजिस्टर में सहेजा जाएगा और सभी प्रमाण पत्रों की एक PDF बनेगी।</p>
+          <div class="row"><button class="btn btn-accent" type="button" id="btnIssue" disabled>प्रमाण पत्र जारी करें</button><button class="btn btn-soft" type="button" id="btnPdfAgain" hidden>PDF फिर से सहेजें</button></div>
+          <p class="status" id="g_status"></p>
+          <img class="canvasview" id="g_sample" alt="पहले प्रमाण पत्र का पूर्वावलोकन" hidden>
+        </div>
+      </div>
+
+      <div id="sub-disc" class="form" hidden>
+        <div class="panel">
+          <h3>ट्रेड वाइज छूट</h3>
+          <p class="muted" style="font-size:.93rem">हर ट्रेड की छूट सीधे रुपये में भरें। "कुल देय" वही राशि है जो प्रशिक्षार्थी को दिखेगी और जिसका भुगतान उसे करना है; वह इसे बदल नहीं सकता। अगर Razorpay में इस राशि का तय Payment Link बनाया है तो उसे भी यहाँ चिपकाएँ।</p>
+          <p class="note" style="font-size:.9rem">Razorpay में राशि अपने-आप भरी आए, इसके लिए हर ट्रेड की "कुल देय" राशि का एक Payment Page बनाएँ: <a href="https://dashboard.razorpay.com/app/paymentpages" target="_blank" rel="noopener">Razorpay डैशबोर्ड → Payment Pages</a> → नया पेज → राशि "Fixed amount" रखकर कुल देय भरें → पेज का लिंक कॉपी करके नीचे उस ट्रेड में चिपकाएँ। (Payment Page एक ही लिंक से कई प्रशिक्षार्थियों का भुगतान लेता है।) छूट बदलने पर पुराना लिंक अपने-आप हट जाता है, ताकि कोई पुरानी राशि न भरे।</p>
+          <div id="discTable" class="disclist"></div>
+          <div class="row"><button class="btn btn-accent" type="button" id="btnSaveDisc">छूट सहेजें</button><span class="status" id="discStatus"></span></div>
+        </div>
+      </div>
+
+      <div id="sub-apps" class="form" hidden>
+        <div class="panel">
+          <h3>रिपोर्ट व Excel</h3>
+          <p class="muted" style="font-size:.93rem">Excel में अलग-अलग शीट बनेंगी: सारांश · दिनांकवार आवेदन व भुगतान · आवेदन व भुगतान (पूरा विवरण) · प्रशिक्षण पूर्ण (बैचवार, तिथि व अवधि सहित) · प्रशिक्षित प्रशिक्षार्थी · प्रमाण पत्र (जारी तिथि वार व पूरा विवरण) · ट्रेड-बैच-शुल्क।</p>
+          <div class="grid2">
+            <label class="f"><span>ट्रेड</span><select id="x_trade"><option value="">सभी ट्रेड</option></select></label>
+            <label class="f"><span>बैच</span><select id="x_batch"><option value="">सभी बैच</option></select></label>
+          </div>
+          <div class="grid2">
+            <label class="f"><span>तिथि से</span><input id="x_from" type="date"></label>
+            <label class="f"><span>तिथि तक</span><input id="x_to" type="date"></label>
+          </div>
+          <div class="row"><button class="btn btn-accent" type="button" id="btnXlsx">Excel फ़ाइल सहेजें</button><span class="status" id="x_status"></span></div>
+        </div>
+        <div class="panel">
+          <h3>सारांश</h3>
+          <div class="sumgrid" id="sumTiles"></div>
+        </div>
+        <div class="panel">
+          <h3>दिनांकवार आवेदन व भुगतान</h3>
+          <div id="rptDaily"></div>
+        </div>
+        <div class="panel">
+          <h3>सफलतापूर्वक प्रशिक्षण प्राप्त (बैचवार)</h3>
+          <div id="rptTrained"></div>
+        </div>
+        <div class="panel">
+          <h3>जारी प्रमाण पत्र (जारी तिथि वार)</h3>
+          <div id="rptCerts"></div>
+        </div>
+        <div class="panel">
+          <h3>WhatsApp से आया आवेदन जोड़ें</h3>
+          <p class="muted" style="font-size:.93rem">प्रशिक्षार्थी का "YKVM प्रशिक्षण आवेदन व शुल्क" वाला WhatsApp संदेश पूरा कॉपी करके यहाँ चिपकाएँ। एक साथ कई संदेश भी चिपका सकते हैं। यह रजिस्टर केवल संस्था (owner/editor) को दिखता है।</p>
+          <textarea id="waPaste" style="min-height:140px" placeholder="*YKVM प्रशिक्षण आवेदन व शुल्क*&#10;आवेदन सं.: ...&#10;नाम: ..."></textarea>
+          <div class="row"><button class="btn btn-teal" type="button" id="btnParse">पढ़ें</button><span class="status" id="parseStatus"></span></div>
+          <div id="parsePreview"></div>
+        </div>
+        <div class="panel">
+          <div class="row" style="justify-content:space-between"><h3>आवेदन रजिस्टर</h3><span class="muted" id="appCount"></span></div>
+          <div id="appTable"><p class="muted">रजिस्टर लोड हो रहा है…</p></div>
+        </div>
+      </div>
+
+      <div id="sub-reg" class="form" hidden>
+        <div class="panel">
+          <div class="row" style="justify-content:space-between"><h3>जारी बैच</h3><span class="muted" id="regCount"></span></div>
+          <div id="batchList"></div>
+        </div>
+        <div class="panel">
+          <h3>सभी प्रमाण पत्र</h3>
+          <input id="regSearch" placeholder="नाम, सीरियल या पंजीकरण संख्या से खोजें">
+          <div id="regTable"></div>
+          <div class="row"><button class="btn btn-soft btn-sm" type="button" id="btnRegCsv">रजिस्टर CSV सहेजें</button></div>
+        </div>
+      </div>
+
+      <div id="sub-cfg" class="form" hidden>
+        <div class="panel">
+          <h3>भुगतान व प्रमाण पत्र सेटिंग</h3>
+          <div class="grid2">
+            <label class="f" style="grid-column:1/-1"><span>Razorpay Payment Page लिंक (राशि अपने-आप भरने हेतु)</span><input id="c_page" class="mono" placeholder="https://pages.razorpay.com/pl_XXXXXXXX/view"><small class="muted" style="font-weight:400">Razorpay डैशबोर्ड → Payment Pages में एक पेज बनाएँ, जिसमें "Amount" नाम का "Customer decides amount" फ़ील्ड हो। उसका लंबा लिंक (pages.razorpay.com/pl_…/view) यहाँ डालें, rzp.io वाला छोटा लिंक नहीं।</small></label>
+            <label class="f"><span>Razorpay.me लिंक (बैकअप)</span><input id="c_rzp" class="mono"></label>
+            <label class="f"><span>संस्था WhatsApp (देश कोड सहित)</span><input id="c_wa" class="mono"></label>
+            <label class="f"><span>संस्था ई-मेल</span><input id="c_mail" class="mono"></label>
+            <label class="f"><span>TAN नंबर (रसीद पर छपेगा)</span><input id="c_tan" class="mono" placeholder="उपलब्ध हो तो भरें"></label>
+            <label class="f"><span>सत्यापन पेज का लिंक (QR में)</span><input id="c_verify" class="mono" placeholder="इस पोर्टल का साझा लिंक"></label>
+            <label class="f"><span>प्रमाण पत्र पर स्थान</span><input id="c_place"></label>
+            <label class="f"><span>हस्ताक्षर 1: नाम</span><input id="c_s1n"></label>
+            <label class="f"><span>हस्ताक्षर 1: पद</span><input id="c_s1t"></label>
+            <label class="f"><span>हस्ताक्षर 2: नाम</span><input id="c_s2n"></label>
+            <label class="f"><span>हस्ताक्षर 2: पद</span><input id="c_s2t"></label>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="row" style="justify-content:space-between"><h3>प्रशिक्षण ट्रेड व बैच</h3><button class="btn btn-soft btn-sm" type="button" id="btnAddTrade">+ नया ट्रेड</button></div>
+          <p class="muted" style="font-size:.9rem">हर बैच नई पंक्ति में लिखें। "अतिरिक्त प्रश्न" उस ट्रेड के आवेदन फॉर्म में जुड़ते हैं; हर प्रश्न नई पंक्ति में।</p>
+          <div id="tradeEditor" class="form"></div>
+        </div>
+        <div class="row"><button class="btn btn-accent" type="button" id="btnSaveCfg">सेटिंग सहेजें</button><span class="status" id="cfgStatus"></span></div>
+      </div>
+    </section>
+
+    <footer>
+      <span>युवा कौशल विकास मण्डल · पंजीकृत सोसाइटी 356/2014-15 · PAN AAAAY3865G · 12A AAAAY3865G25LK01 · 80G AAAAY3865G25LK02</span>
+      <span>प्रज्ञा पीठ तेवन बाबा, मराठीपुरा, मौदहा, हमीरपुर (उ.प्र.) 210507 · <a href="https://ykvmup.org" target="_blank" rel="noopener">ykvmup.org</a></span>
+    </footer>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(function(){
+"use strict";
+const ORG = {
+  hi:"युवा कौशल विकास मण्डल", en:"YUVA KAUSHAL VIKAS MANDAL",
+  addr:"प्रज्ञा पीठ तेवन बाबा, मराठीपुरा, मौदहा, जिला हमीरपुर (उ.प्र.) 210507",
+  reg:"356/2014-15", darpan:"UP/2018/0184056", pan:"AAAAY3865G", a12:"AAAAY3865G25LK01", g80:"AAAAY3865G25LK02", csr:"CSR00000521",
+  phone:"05284-298670", mobile:"+91 8400032827"
+};
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ss = { get(k){try{return JSON.parse(sessionStorage.getItem(k))}catch(e){return null}}, set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}, del(k){try{sessionStorage.removeItem(k)}catch(e){}} };
+
+let PORTAL = null, REG = {batches:[],certificates:[]};
+let artifactNS = null, downloadsNS = null, dbNS = null, isEditor = false, APPS = [];
+
+/* ---------- tabs ---------- */
+function show(tab){
+  $$(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.tab === tab)));
+  $$("section.view").forEach(v => v.hidden = v.id !== "v-" + tab);
+  window.scrollTo({top:0, behavior:"auto"});
+}
+$$(".tab").forEach(t => t.addEventListener("click", () => show(t.dataset.tab)));
+document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) show(g.dataset.go); });
+const h = (location.hash || "").replace("#","");
+if (["profile","courses","apply","verify"].includes(h)) show(h);
+
+/* ---------- helpers ---------- */
+function fmtDate(iso){ if(!iso) return ""; const [y,m,d] = iso.split("-"); return `${d}-${m}-${y}`; }
+function today(){ const d = new Date(); const p = n => String(n).padStart(2,"0"); return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`; }
+function inr(n){ n = Math.round(Number(n)||0); const s = String(n); if (s.length <= 3) return s; const last = s.slice(-3); return s.slice(0,-3).replace(/\B(?=(\d{2})+(?!\d))/g, ",") + "," + last; }
+function words(n){
+  n = Math.round(Number(n)||0); if (n === 0) return "शून्य";
+  const a = ["","एक","दो","तीन","चार","पाँच","छह","सात","आठ","नौ","दस","ग्यारह","बारह","तेरह","चौदह","पंद्रह","सोलह","सत्रह","अठारह","उन्नीस","बीस","इक्कीस","बाईस","तेईस","चौबीस","पच्चीस","छब्बीस","सत्ताईस","अट्ठाईस","उनतीस","तीस","इकतीस","बत्तीस","तैंतीस","चौंतीस","पैंतीस","छत्तीस","सैंतीस","अड़तीस","उनतालीस","चालीस","इकतालीस","बयालीस","तैंतालीस","चवालीस","पैंतालीस","छियालीस","सैंतालीस","अड़तालीस","उनचास","पचास","इक्यावन","बावन","तिरपन","चौवन","पचपन","छप्पन","सत्तावन","अट्ठावन","उनसठ","साठ","इकसठ","बासठ","तिरसठ","चौंसठ","पैंसठ","छियासठ","सड़सठ","अड़सठ","उनहत्तर","सत्तर","इकहत्तर","बहत्तर","तिहत्तर","चौहत्तर","पचहत्तर","छिहत्तर","सतहत्तर","अठहत्तर","उनासी","अस्सी","इक्यासी","बयासी","तिरासी","चौरासी","पचासी","छियासी","सत्तासी","अट्ठासी","नवासी","नब्बे","इक्यानबे","बानबे","तिरानबे","चौरानबे","पंचानबे","छियानबे","सत्तानबे","अट्ठानबे","निन्यानबे"];
+  const parts = []; const units = [[10000000,"करोड़"],[100000,"लाख"],[1000,"हज़ार"],[100,"सौ"]];
+  for (const [v,w] of units){ if (n >= v){ parts.push(words(Math.floor(n/v)) + " " + w); n %= v; } }
+  if (n) parts.push(a[n]);
+  return parts.join(" ");
+}
+function disc(t){
+  const fee = Math.round(Number(t.fee)||0), d = Math.max(0, Number(t.discount)||0);
+  const v = t.discountType === "percent" ? Math.round(fee * Math.min(d,100) / 100) : Math.round(d);
+  return Math.min(v, fee);
+}
+function payable(t){ return Math.max(0, Math.round(Number(t.fee)||0) - disc(t)); }
+function discLabel(t){ return t.discountType === "percent" ? `${Number(t.discount)}% (₹${inr(disc(t))})` : `₹${inr(disc(t))}`; }
+function trades(){ return (PORTAL?.trades || []).filter(t => t.active !== false); }
+function tradeById(id){ return (PORTAL?.trades || []).find(t => t.id === id); }
+function rnd(len){ const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; const b = new Uint32Array(len); crypto.getRandomValues(b); return Array.from(b, x => A[x % A.length]).join(""); }
+const norm = s => String(s||"").toUpperCase().replace(/[\s\-]/g,"");
+
+async function saveFile(filename, data, statusEl){
+  if (downloadsNS){
+    try { await downloadsNS.save({filename, data}); if (statusEl) statusEl.textContent = filename + " सहेज ली गई।"; return true; }
+    catch(e){ if (e?.code === "declined"){ if (statusEl) statusEl.textContent = "सहेजना रद्द किया गया।"; return false; } }
+  }
+  if (!window.claude){
+    try {
+      const blob = data instanceof Blob ? data : new Blob([data]);
+      const u = URL.createObjectURL(blob), el = document.createElement("a");
+      el.href = u; el.download = filename; document.body.appendChild(el); el.click(); el.remove();
+      setTimeout(() => URL.revokeObjectURL(u), 4000);
+      if (statusEl) statusEl.textContent = filename + " डाउनलोड हो रही है।"; return true;
+    } catch(e){}
+  }
+  if (statusEl) statusEl.textContent = "इस दृश्य में फ़ाइल सहेजना उपलब्ध नहीं है। ऊपर दिखी छवि को दबाकर रखें और सेव करें, या स्क्रीनशॉट लें।";
+  return false;
+}
+
+/* ---------- data load ---------- */
+async function load(){
+  try {
+    const [p, r] = await Promise.all([
+      fetch("data/portal.json", {cache:"no-store"}).then(x => x.json()),
+      fetch("data/certificates.json", {cache:"no-store"}).then(x => x.json()).catch(() => ({batches:[],certificates:[]}))
+    ]);
+    PORTAL = p; REG = r && r.certificates ? r : {batches:[],certificates:[]};
+  } catch(e){
+    $("#tradeCards").innerHTML = '<p class="note err">प्रशिक्षण सूची लोड नहीं हो सकी। पेज दोबारा खोलें।</p>';
+    return;
+  }
+  renderTrades(); fillTradeSelect(); fillRail(); restoreWizard();
+}
+
+/* ---------- courses ---------- */
+function renderTrades(){
+  const list = trades();
+  $("#tradeCards").innerHTML = list.map(t => `
+    <article class="trade">
+      <div class="top"><h3>${esc(t.name)}</h3><span>${disc(t) ? `<span class="was">₹${inr(t.fee)}</span>` : ""}<span class="fee">₹${inr(payable(t))}</span></span></div>
+      ${disc(t) ? `<span class="pill ok" style="align-self:flex-start">छूट ${esc(discLabel(t))}</span>` : ""}
+      <span class="code">${esc(t.en)} · ${esc(t.code)} · ${esc(t.duration)}</span>
+      <p class="muted" style="font-size:.93rem">${esc(t.about||"")}</p>
+      <ul>${(t.batches||[]).map(b => `<li>${esc(b)}</li>`).join("")}</ul>
+      <button class="btn btn-accent btn-sm" type="button" data-apply="${esc(t.id)}">आवेदन करें</button>
+    </article>`).join("") || '<p class="muted">अभी कोई प्रशिक्षण उपलब्ध नहीं है।</p>';
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-apply]"); if (!b) return;
+  show("apply"); $("#selTrade").value = b.dataset.apply; onTrade();
+});
+
+/* ---------- apply wizard ---------- */
+let APP = null;
+function setStep(n){
+  $$("#steps span").forEach(s => { const k = +s.dataset.s; s.className = k === n ? "on" : (k < n ? "done" : ""); });
+}
+function fillTradeSelect(){
+  $("#selTrade").innerHTML = '<option value="">— ट्रेड चुनें —</option>' + trades().map(t => `<option value="${esc(t.id)}">${esc(t.name)} (₹${inr(payable(t))})</option>`).join("");
+  setStep(1);
+}
+function onTrade(){
+  const t = tradeById($("#selTrade").value), sb = $("#selBatch");
+  if (!t){ sb.disabled = true; sb.innerHTML = '<option value="">— पहले ट्रेड चुनें —</option>'; $("#s2").hidden = true; setStep(1); return; }
+  sb.disabled = false;
+  sb.innerHTML = '<option value="">— बैच चुनें —</option>' + (t.batches||[]).map(b => `<option>${esc(b)}</option>`).join("");
+  if ((t.batches||[]).length === 1) sb.selectedIndex = 1;
+  $("#tradeInfo").innerHTML = `<b>${esc(t.name)}</b> · अवधि ${esc(t.duration)} · प्रशिक्षण राशि <span class="mono">₹${inr(t.fee)}</span>${disc(t) ? ` · छूट <span class="mono">₹${inr(disc(t))}</span>` : ""} · कुल देय <span class="mono">₹${inr(payable(t))}</span>`;
+  $("#formTitle").textContent = `आवेदन फॉर्म: ${t.name}`;
+  $("#extraFields").innerHTML = (t.extra||[]).map((q,i) => `<label class="f"><span class="req">${esc(q)}</span><input id="x_${i}" data-q="${esc(q)}" required></label>`).join("");
+  $("#s2").hidden = false; $("#s3").hidden = true; $("#s4").hidden = true; setStep(2);
+}
+$("#selTrade").addEventListener("change", onTrade);
+
+$("#s2").addEventListener("submit", e => {
+  e.preventDefault();
+  const err = $("#formErr"); err.hidden = true;
+  const t = tradeById($("#selTrade").value), batch = $("#selBatch").value;
+  const v = id => $("#"+id).value.trim();
+  const miss = [];
+  if (!batch) miss.push("बैच");
+  $$("#s2 [required]").forEach(el => { if ((el.type === "checkbox" && !el.checked) || (el.type !== "checkbox" && !el.value.trim())) miss.push(el.closest("label")?.querySelector("span")?.textContent || "घोषणा"); });
+  if (v("a_mobile") && !/^[6-9]\d{9}$/.test(v("a_mobile"))) miss.push("सही 10 अंकों का मोबाइल नंबर");
+  if (v("a_email") && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("a_email"))) miss.push("सही ई-मेल");
+  if (miss.length){ err.textContent = "कृपया भरें: " + [...new Set(miss)].join(", "); err.hidden = false;
+    const first = !batch ? $("#selBatch") : $$("#s2 [required]").find(el => (el.type === "checkbox" && !el.checked) || (el.type !== "checkbox" && !el.value.trim()));
+    if (first){ first.scrollIntoView({block:"center"}); first.focus(); } else err.scrollIntoView({block:"center"});
+    return; }
+  const d = new Date();
+  APP = {
+    appNo: `YKVM/APP/${d.getFullYear()}/${t.code}/${String(d.getTime()).slice(-6)}`,
+    tradeId: t.id, trade: t.name, tradeEn: t.en, batch, fee: Math.round(Number(t.fee)||0), discount: disc(t), discountText: disc(t) ? discLabel(t) : "", payable: payable(t), duration: t.duration,
+    name: v("a_name"), father: v("a_father"), dob: v("a_dob"), gender: v("a_gender"), mobile: v("a_mobile"), email: v("a_email"),
+    cat: v("a_cat"), edu: v("a_edu"), village: v("a_village"), block: v("a_block"), district: v("a_district"), pin: v("a_pin"),
+    extra: $$("#extraFields input").map(i => [i.dataset.q, i.value.trim()]), submittedAt: d.toISOString(), appDate: today()
+  };
+  ss.set("ykvm_app", APP);
+  openPay();
+});
+
+function openPay(){
+  $("#s1").hidden = true; $("#s2").hidden = true; $("#s3").hidden = false; $("#s4").hidden = true; setStep(3);
+  $("#appSummary").innerHTML = [
+    ["आवेदन संख्या", `<span class="mono">${esc(APP.appNo)}</span>`], ["नाम", esc(APP.name)], ["ट्रेड", esc(APP.trade)], ["बैच", esc(APP.batch)]
+  ].map(([k,v]) => `<div>${k}</div><div>${v}</div>`).join("");
+  const t = tradeById(APP.tradeId);
+  if (t && !APP.payId){ APP.fee = Math.round(Number(t.fee)||0); APP.discount = disc(t); APP.discountText = APP.discount ? discLabel(t) : ""; APP.payable = payable(t); ss.set("ykvm_app", APP); }
+  const pct = APP.discountText && APP.discountText.includes("%") ? ` (${esc(APP.discountText.split(" ")[0])})` : "";
+  $("#bill").innerHTML = `
+    <div><span>प्रशिक्षण राशि</span><span class="v">₹ ${inr(APP.fee)}</span></div>
+    <div class="disc"><span>छूट (डिस्काउंट)${pct}</span><span class="v">− ₹ ${inr(APP.discount||0)}</span></div>
+    <div class="total"><span>कुल देय राशि</span><span class="v">₹ ${inr(APP.payable)}</span></div>`;
+  const base = (PORTAL?.settings?.razorpayLink || "https://razorpay.me/@yuvakaushalvikasmandal").replace(/\/+$/,"");
+  const tl = (t && t.payLink && (t.payLinkAmount == null || Number(t.payLinkAmount) === APP.payable)) ? t.payLink.trim() : "";
+  const pp = pageUrl();
+  let href = base, auto = false;
+  if (tl){ href = tl; auto = true; }
+  else if (pp){
+    const q = new URLSearchParams({ amount: String(APP.payable), email: APP.email, phone: APP.mobile, full_name: APP.name, application_no: APP.appNo, trade: APP.trade });
+    href = pp + "?" + q.toString().replace(/\+/g, "%20"); auto = true;
+  }
+  $("#payLink").href = href;
+  $("#payHint").hidden = auto;
+  $("#payHintAmt").textContent = `₹ ${APP.payable}`;
+  $("#payLink").textContent = `Razorpay से ₹${inr(APP.payable)} का भुगतान करें`;
+  $("#payDate").value = APP.payDate || today(); $("#payId").value = APP.payId || "";
+  $("#v-apply").scrollIntoView({block:"start"});
+}
+
+function pageUrl(){
+  let u = (PORTAL?.settings?.paymentPageUrl || "").trim();
+  const m = u.match(/^https:\/\/pages\.razorpay\.com\/(pl_[A-Za-z0-9]+)/);
+  return m ? `https://pages.razorpay.com/${m[1]}/view` : "";
+}
+$("#btnCopyAmt").addEventListener("click", async () => {
+  const b = $("#btnCopyAmt");
+  try { await navigator.clipboard.writeText(String(APP.payable)); b.textContent = "कॉपी हो गई"; }
+  catch(e){ const r = document.createRange(); r.selectNodeContents($("#payHintAmt")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = "राशि चुन ली गई, कॉपी करें"; }
+  setTimeout(() => b.textContent = "राशि कॉपी करें", 2500);
+});
+$("#btnReceipt").addEventListener("click", async () => {
+  const err = $("#payErr"); err.hidden = true;
+  const amt = APP.payable, pid = $("#payId").value.trim(), pdate = $("#payDate").value;
+  if (!pid || !pdate){ err.textContent = "Razorpay Payment ID और भुगतान तिथि भरें।"; err.hidden = false; return; }
+  if (!/^pay_[A-Za-z0-9]{6,}$/.test(pid)){ err.textContent = "Payment ID 'pay_' से शुरू होती है, जैसे pay_Nx3Abc12Def45. Razorpay के SMS/ई-मेल में देखें।"; err.hidden = false; return; }
+  APP.amount = amt; APP.payId = pid; APP.payDate = pdate;
+  APP.rcptNo = APP.rcptNo || `YKVM/RCPT/${finYear(pdate)}/${String(Date.now()).slice(-7)}`;
+  ss.set("ykvm_app", APP);
+  await renderReceipt();
+  if (dbNS && isEditor) saveApp(APP).catch(() => {});
+});
+function finYear(iso){ const [y,m] = iso.split("-").map(Number); const s = m >= 4 ? y : y-1; return `${s}-${String(s+1).slice(-2)}`; }
+
+let RCPT_CANVAS = null;
+async function renderReceipt(){
+  $("#s3").hidden = true; $("#s4").hidden = false; setStep(4);
+  RCPT_CANVAS = await drawReceipt(APP);
+  $("#receiptImg").src = RCPT_CANVAS.toDataURL("image/jpeg", .9);
+  const S = PORTAL.settings;
+  const msg = [
+    `*YKVM प्रशिक्षण आवेदन व शुल्क*`, `आवेदन सं.: ${APP.appNo}`, `आवेदन तिथि: ${fmtDate(APP.appDate||"")}`, `रसीद सं.: ${APP.rcptNo}`,
+    `नाम: ${APP.name}`, `पिता/पति: ${APP.father}`, `जन्म तिथि: ${fmtDate(APP.dob)} | लिंग: ${APP.gender}`,
+    `मोबाइल: ${APP.mobile} | ई-मेल: ${APP.email}`, `श्रेणी: ${APP.cat||"-"} | योग्यता: ${APP.edu}`,
+    `पता: ${[APP.village,APP.block,APP.district,APP.pin].filter(Boolean).join(", ")}`,
+    `ट्रेड: ${APP.trade} | ${APP.batch}`, `अवधि: ${APP.duration||""}`, ...APP.extra.map(([q,a]) => `${q}: ${a}`),
+    `प्रशिक्षण राशि: ₹${inr(APP.fee)} | छूट: ₹${inr(APP.discount||0)} | कुल देय/भुगतान: ₹${inr(APP.amount)}`,
+    `Razorpay ID: ${APP.payId} | तिथि: ${fmtDate(APP.payDate)}`,
+    `कृपया रसीद ${APP.email} पर भेजें।`
+  ].join("\n");
+  $("#waLink").href = `https://wa.me/${S.orgWhatsApp || "918400032827"}?text=${encodeURIComponent(msg)}`;
+  $("#mailNote").innerHTML = `Razorpay भुगतान की पुष्टि <b>${esc(APP.email)}</b> पर स्वयं भेजता है। संस्था की PAN, 12A व 80G विवरण वाली यह रसीद PDF सहेजें, और "WhatsApp पर भेजें" दबाकर आवेदन संस्था तक पहुँचाएँ; संस्था भुगतान मिलान के बाद रसीद आपके ई-मेल पर भेजेगी।`;
+}
+$("#btnReceiptPdf").addEventListener("click", async () => {
+  if (!RCPT_CANVAS) return;
+  const { jsPDF } = window.jspdf; const doc = new jsPDF({unit:"mm", format:"a4"});
+  doc.addImage(RCPT_CANVAS.toDataURL("image/jpeg", .92), "JPEG", 0, 0, 210, 297);
+  await saveFile(`YKVM-Receipt-${APP.rcptNo.split("/").pop()}.pdf`, doc.output("blob"), $("#rcptStatus"));
+});
+$("#btnNewApp").addEventListener("click", () => {
+  APP = null; RCPT_CANVAS = null; ss.del("ykvm_app");
+  $("#s2").reset(); $("#selTrade").value = ""; onTrade(); $("#s1").hidden = false; $("#s4").hidden = true; $("#s3").hidden = true;
+});
+function restoreWizard(){
+  const a = ss.get("ykvm_app"); if (!a || !tradeById(a.tradeId)) return;
+  APP = a; $("#selTrade").value = a.tradeId; onTrade(); $("#selBatch").value = a.batch;
+  if (a.payId && a.rcptNo){ $("#s1").hidden = true; $("#s2").hidden = true; renderReceipt(); } else openPay();
+}
+
+/* ---------- canvas drawing ---------- */
+const IMG = {};
+function loadImg(src){ return IMG[src] || (IMG[src] = new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; })); }
+async function fontsReady(){
+  try { await Promise.all([
+    document.fonts.load('400 40px "Tiro Devanagari Hindi"'), document.fonts.load('600 30px "Mukta"'),
+    document.fonts.load('700 30px "Mukta"'), document.fonts.load('400 30px "Mukta"'), document.fonts.load('600 24px "IBM Plex Mono"')
+  ]); } catch(e){}
+}
+function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function wrap(ctx, text, x, y, maxW, lh, align){
+  const words = String(text).split(/\s+/); let line = "", lines = [];
+  for (const w of words){ const t = line ? line + " " + w : w; if (ctx.measureText(t).width > maxW && line){ lines.push(line); line = w; } else line = t; }
+  if (line) lines.push(line);
+  ctx.textAlign = align || "left";
+  lines.forEach((l,i) => ctx.fillText(l, x, y + i*lh));
+  return lines.length;
+}
+function star(ctx, cx, cy, R, r, n, fill, stroke){
+  ctx.beginPath();
+  for (let i=0;i<n*2;i++){ const a = Math.PI*i/n - Math.PI/2; const rad = i%2 ? r : R; ctx.lineTo(cx+Math.cos(a)*rad, cy+Math.sin(a)*rad); }
+  ctx.closePath(); if (fill){ ctx.fillStyle = fill; ctx.fill(); } if (stroke){ ctx.strokeStyle = stroke; ctx.lineWidth = 3; ctx.stroke(); }
+}
+function drawQR(ctx, text, x, y, size){
+  try {
+    const qr = qrcode(0, "M"); qr.addData(unescape(encodeURIComponent(text)), "Byte"); qr.make();
+    const n = qr.getModuleCount(), cell = size / (n + 2);
+    ctx.fillStyle = "#fff"; ctx.fillRect(x, y, size, size); ctx.fillStyle = "#13302C";
+    for (let r=0;r<n;r++) for (let c=0;c<n;c++) if (qr.isDark(r,c)) ctx.fillRect(x+(c+1)*cell, y+(r+1)*cell, Math.ceil(cell), Math.ceil(cell));
+  } catch(e){}
+}
+
+async function drawReceipt(a){
+  await fontsReady();
+  const W = 1654, H = 2339, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"), ink = "#13302C", teal = "#0E7681", gold = "#DE8611", muted = "#56685F";
+  x.fillStyle = "#fff"; x.fillRect(0,0,W,H);
+  x.fillStyle = teal; x.fillRect(0,0,W,24); x.fillStyle = gold; x.fillRect(0,24,W,8);
+  const logo = await loadImg("img/logo.png"), sign = await loadImg("img/sign.png");
+  if (logo){ x.globalAlpha = .07; x.drawImage(logo, W/2-450, 900, 900, 900); x.globalAlpha = 1; x.drawImage(logo, 90, 80, 210, 210); }
+  x.fillStyle = ink; x.font = '400 78px "Tiro Devanagari Hindi"'; x.textAlign = "left"; x.fillText(ORG.hi, 330, 160);
+  x.font = '600 34px "Mukta"'; x.fillStyle = teal; x.fillText(ORG.en, 332, 210);
+  x.font = '400 28px "Mukta"'; x.fillStyle = muted; x.fillText(ORG.addr, 332, 258);
+  x.fillText(`पंजीकरण सं. ${ORG.reg}  ·  NGO दर्पण ${ORG.darpan}  ·  फोन ${ORG.phone}`, 332, 298);
+  x.fillStyle = "#FCEBD2"; x.fillRect(90, 350, W-180, 96);
+  x.fillStyle = ink; x.font = '400 54px "Tiro Devanagari Hindi"'; x.textAlign = "center"; x.fillText("प्रशिक्षण शुल्क रसीद  ·  FEE RECEIPT", W/2, 415);
+  x.textAlign = "left"; x.font = '600 30px "IBM Plex Mono"'; x.fillStyle = ink;
+  x.fillText(`रसीद सं.: ${a.rcptNo}`, 90, 515); x.textAlign = "right"; x.fillText(`दिनांक: ${fmtDate(a.payDate)}`, W-90, 515); x.textAlign = "left";
+  const rows = [
+    ["प्राप्तकर्ता का नाम", a.name], ["पिता / पति का नाम", a.father], ["मोबाइल / ई-मेल", `${a.mobile}  ·  ${a.email}`],
+    ["पता", [a.village,a.block,a.district,a.pin].filter(Boolean).join(", ")], ["आवेदन संख्या", a.appNo],
+    ["प्रशिक्षण ट्रेड", `${a.trade} (${a.tradeEn})`], ["बैच / अवधि", `${a.batch}  ·  ${a.duration}`],
+    ["भुगतान माध्यम", "ऑनलाइन (Razorpay)"], ["Razorpay Payment ID", a.payId],
+    ["प्रशिक्षण राशि", `₹ ${inr(a.fee)}/-`], ["छूट (डिस्काउंट)", `₹ ${inr(a.discount||0)}/-${a.discountText && a.discountText.includes("%") ? "  (" + a.discountText.split(" ")[0] + ")" : ""}`],
+    ["कुल देय / प्राप्त राशि", `₹ ${inr(a.amount)}/-`], ["राशि शब्दों में", `${words(a.amount)} रुपये मात्र`]
+  ];
+  let y = 580; const L = 90, M = 560, R = W-90;
+  rows.forEach(([k,v],i) => {
+    const hRow = 72; if (i%2===0){ x.fillStyle = "rgba(236,242,232,.7)"; x.fillRect(L, y, R-L, hRow); }
+    x.fillStyle = muted; x.font = '500 30px "Mukta"'; x.fillText(k, L+20, y+50);
+    x.fillStyle = ink; x.font = (k === "कुल देय / प्राप्त राशि" ? '700 36px "Mukta"' : '500 31px "Mukta"');
+    const fit = String(v); let s = fit; while (x.measureText(s).width > R-M-20 && s.length > 4) s = s.slice(0,-2); if (s !== fit) s += "…";
+    x.fillText(s, M, y+50); y += hRow;
+  });
+  x.strokeStyle = "#D8DFD4"; x.lineWidth = 2; x.strokeRect(L, 580, R-L, y-580);
+  y += 60;
+  x.fillStyle = teal; x.font = '700 30px "Mukta"'; x.fillText("संस्था का विवरण", L, y); y += 20;
+  const S = PORTAL.settings || {};
+  const idRows = [["PAN", ORG.pan], ["TAN", S.tan || "—"], ["12A पंजीकरण", ORG.a12], ["80G पंजीकरण", ORG.g80], ["CSR पंजीकरण", ORG.csr], ["सोसाइटी पंजीकरण", `${ORG.reg} (22-08-2014)`]];
+  const colW = (R-L)/2;
+  idRows.forEach(([k,v],i) => {
+    const cx = L + (i%2)*colW, cy = y + Math.floor(i/2)*70;
+    x.strokeStyle = "#D8DFD4"; x.strokeRect(cx, cy, colW, 70);
+    x.fillStyle = muted; x.font = '500 26px "Mukta"'; x.fillText(k, cx+18, cy+44);
+    x.fillStyle = ink; x.font = '600 28px "IBM Plex Mono"'; x.fillText(v, cx+250, cy+45);
+  });
+  y += 3*70 + 60;
+  x.fillStyle = muted; x.font = '400 27px "Mukta"';
+  y += 36*wrap(x, "यह रसीद प्रशिक्षार्थी द्वारा दिए गए Razorpay भुगतान विवरण के आधार पर ऑनलाइन बनी है। संस्था के बैंक खाते में राशि के मिलान के बाद यह मान्य होगी। प्रशिक्षण शुल्क अप्रतिदेय (non-refundable) है।", L, y, R-L, 40);
+  y = Math.max(y + 280, 2090);
+  x.textAlign = "right"; x.fillStyle = ink; x.font = '600 30px "Mukta"'; x.fillText(S.sign1Name || "", R, y);
+  x.font = '400 26px "Mukta"'; x.fillStyle = muted; x.fillText(`अधिकृत हस्ताक्षरकर्ता · ${S.sign1Title || ""}`, R, y+40);
+  x.strokeStyle = ink; x.lineWidth = 2; x.beginPath(); x.moveTo(R-430, y-50); x.lineTo(R, y-50); x.stroke();
+  if (sign){ const sw = 400, sh = sw * sign.height / sign.width; x.drawImage(sign, R-415, y-50-sh+18, sw, sh); }
+  const qrTxt = [
+    "YKVM FEE RECEIPT", "Receipt No: " + a.rcptNo, "Date: " + fmtDate(a.payDate), "Application No: " + a.appNo,
+    "Name: " + a.name, "Father/Husband: " + a.father, "Mobile: " + a.mobile, "Email: " + a.email,
+    "Trade: " + a.trade + " (" + a.tradeEn + ")", "Batch: " + a.batch,
+    "Training Fee: Rs " + a.fee, "Discount: Rs " + (a.discount||0), "Amount Paid: Rs " + a.amount,
+    "Mode: Online (Razorpay)", "Razorpay ID: " + a.payId,
+    "Yuva Kaushal Vikas Mandal | PAN " + ORG.pan + " | TAN " + (S.tan || "-")
+  ].join("\n");
+  drawQR(x, qrTxt, L, y-220, 270);
+  x.textAlign = "left"; x.fillStyle = muted; x.font = '400 24px "Mukta"'; x.fillText("QR स्कैन करें:", L+290, y-10); x.fillText("रसीद का पूरा विवरण", L+290, y+24);
+  x.fillStyle = teal; x.fillRect(0,H-24,W,24);
+  x.textAlign = "left"; return c;
+}
+
+async function drawCertificate(cert){
+  await fontsReady();
+  const W = 2339, H = 1654, c = document.createElement("canvas"); c.width = W; c.height = H;
+  const x = c.getContext("2d"), ink = "#13302C", teal = "#0E7681", gold = "#C9881A", muted = "#56685F";
+  const S = PORTAL?.settings || {};
+  // ground
+  const g = x.createRadialGradient(W/2,H/2,200,W/2,H/2,1400); g.addColorStop(0,"#FFFDF6"); g.addColorStop(1,"#F7EED8");
+  x.fillStyle = g; x.fillRect(0,0,W,H);
+  // watermark star
+  x.globalAlpha = .06; star(x, W/2, H/2+40, 560, 400, 9, gold); x.globalAlpha = 1;
+  // borders
+  x.lineWidth = 26; x.strokeStyle = teal; x.strokeRect(40,40,W-80,H-80);
+  x.lineWidth = 4; x.strokeStyle = gold; x.strokeRect(78,78,W-156,H-156);
+  x.lineWidth = 1.5; x.strokeRect(92,92,W-184,H-184);
+  [[92,92],[W-92,92],[92,H-92],[W-92,H-92]].forEach(([cx,cy]) => star(x,cx,cy,40,20,9,gold));
+  // header
+  const logo = await loadImg("img/logo.png"); if (logo) x.drawImage(logo, 170, 150, 230, 230);
+  x.textAlign = "center"; x.fillStyle = ink;
+  x.font = '400 100px "Tiro Devanagari Hindi"'; x.fillText(ORG.hi, W/2+60, 255);
+  x.font = '600 40px "Mukta"'; x.fillStyle = teal; x.fillText("YUVA KAUSHAL VIKAS MANDAL, HAMIRPUR (U.P.)", W/2+60, 315);
+  x.font = '400 29px "Mukta"'; x.fillStyle = muted;
+  x.fillText(`पंजीकृत सोसाइटी ${ORG.reg}  ·  NGO दर्पण ${ORG.darpan}  ·  PAN ${ORG.pan}`, W/2+60, 362);
+  // ribbon
+  x.fillStyle = gold; const rw = 1000, rx = W/2-rw/2, ry = 420;
+  x.beginPath(); x.moveTo(rx-40, ry); x.lineTo(rx+rw+40, ry); x.lineTo(rx+rw+10, ry+55); x.lineTo(rx+rw+40, ry+110); x.lineTo(rx-40, ry+110); x.lineTo(rx-10, ry+55); x.closePath(); x.fill();
+  x.fillStyle = "#1E1404"; x.font = '400 70px "Tiro Devanagari Hindi"'; x.fillText("प्रशिक्षण प्रमाण पत्र", W/2, ry+80);
+  x.fillStyle = muted; x.font = '600 32px "Mukta"'; x.fillText("C E R T I F I C A T E   O F   T R A I N I N G", W/2, ry+170);
+  // body
+  x.fillStyle = muted; x.font = '400 40px "Mukta"'; x.fillText("प्रमाणित किया जाता है कि", W/2, 700);
+  x.fillStyle = ink; x.font = '400 92px "Tiro Devanagari Hindi"'; x.fillText(cert.name, W/2, 810);
+  x.strokeStyle = gold; x.lineWidth = 3; const nw = Math.min(1500, x.measureText(cert.name).width + 160);
+  x.beginPath(); x.moveTo(W/2-nw/2, 838); x.lineTo(W/2+nw/2, 838); x.stroke();
+  x.font = '400 42px "Mukta"'; x.fillStyle = ink;
+  const line1 = `पिता / पति: ${cert.father}${cert.village ? "  ·  निवासी: " + cert.village : ""}  ·  पंजीकरण सं.: ${cert.reg}`;
+  x.fillText(line1, W/2, 910);
+  const body = `ने संस्था द्वारा आयोजित ${cert.duration} के "${cert.trade}" प्रशिक्षण कार्यक्रम में दिनांक ${fmtDate(cert.start)} से ${fmtDate(cert.end)} तक सफलतापूर्वक भाग लेकर प्रशिक्षण पूर्ण किया${cert.grade ? " तथा ग्रेड " + cert.grade + " प्राप्त किया" : ""}।`;
+  x.font = '400 46px "Mukta"'; const n = wrap(x, body, W/2, 985, 1750, 66, "center");
+  x.fillStyle = muted; x.font = '400 30px "Mukta"';
+  wrap(x, `This is to certify that the above named has successfully completed ${cert.tradeEn ? '"' + cert.tradeEn + '"' : "the"} training (${cert.duration}) organised by Yuva Kaushal Vikas Mandal.`, W/2, 985 + n*66 + 20, 1700, 42, "center");
+  // footer: QR + ids
+  const fy = 1260;
+  drawQR(x, `YKVM CERTIFICATE\nSerial: ${cert.serial}\nCode: ${cert.code}\nReg: ${cert.reg}\nName: ${cert.nameEn || ""}\nVerify: ${S.verifyUrl || "ykvmup.org"}`, 190, fy, 230);
+  x.textAlign = "left"; x.fillStyle = ink; x.font = '600 30px "IBM Plex Mono"';
+  x.fillText(`Serial No : ${cert.serial}`, 450, fy+50);
+  x.fillText(`Verify Code: ${cert.code}`, 450, fy+100);
+  x.fillText(`Reg. No   : ${cert.reg}`, 450, fy+150);
+  x.font = '400 28px "Mukta"'; x.fillStyle = muted;
+  x.fillText(`दिनांक: ${fmtDate(cert.issue)}  ·  स्थान: ${S.certPlace || "मौदहा, हमीरपुर"}`, 450, fy+205);
+  // seal
+  if (logo) x.drawImage(logo, 1430-125, fy-15, 250, 250);
+  x.textAlign = "center";
+  const sign = await loadImg("img/sign.png");
+  if (sign){ const sw = 290, sh = sw * sign.height / sign.width; x.drawImage(sign, 2090-sw/2, fy+130-sh+14, sw, sh); }
+  // signatures
+  [[1790, S.sign2Name, S.sign2Title], [2090, S.sign1Name, S.sign1Title]].forEach(([sx,nm,tt]) => {
+    x.strokeStyle = ink; x.lineWidth = 2; x.beginPath(); x.moveTo(sx-150, fy+130); x.lineTo(sx+150, fy+130); x.stroke();
+    x.fillStyle = ink; x.font = '600 32px "Mukta"'; x.fillText(nm || "", sx, fy+175);
+    x.fillStyle = muted; x.font = '400 27px "Mukta"'; x.fillText(tt || "", sx, fy+212);
+  });
+  x.textAlign = "left"; return c;
+}
+
+/* ---------- verify ---------- */
+$("#verifyForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const out = $("#verifyOut"), code = norm($("#v_code").value), serial = norm($("#v_serial").value), reg = norm($("#v_reg").value);
+  if (!code || !serial || !reg){ out.innerHTML = '<p class="note err">तीनों जानकारी भरें: सत्यापन कोड, सीरियल नंबर और पंजीकरण संख्या।</p>'; return; }
+  const hit = REG.certificates.find(c => norm(c.code) === code && norm(c.serial) === serial && norm(c.reg) === reg);
+  if (!hit){ out.innerHTML = '<div class="panel"><span class="pill bad">मेल नहीं खाया</span><p>इन विवरणों वाला कोई प्रमाण पत्र संस्था के रजिस्टर में नहीं मिला। प्रमाण पत्र पर छपे अंक ध्यान से दोबारा भरें, या संस्था से +91 8400032827 पर संपर्क करें।</p></div>'; return; }
+  out.innerHTML = `<div class="panel"><div class="row"><span class="pill ok">सत्यापित · मान्य प्रमाण पत्र</span></div>
+    <div class="kv"><div>नाम</div><div>${esc(hit.name)}</div><div>पिता / पति</div><div>${esc(hit.father)}</div><div>प्रशिक्षण</div><div>${esc(hit.trade)} · ${esc(hit.duration)}</div><div>अवधि</div><div>${fmtDate(hit.start)} से ${fmtDate(hit.end)}</div><div>सीरियल नंबर</div><div class="mono">${esc(hit.serial)}</div><div>जारी तिथि</div><div>${fmtDate(hit.issue)}</div></div>
+    <img class="canvasview" id="vImg" alt="प्रमाण पत्र"></div>`;
+  const cv = await drawCertificate(hit); $("#vImg").src = cv.toDataURL("image/jpeg", .85);
+});
+
+/* ---------- admin ---------- */
+function sub(name){
+  $$("[data-sub]").forEach(b => b.className = "btn btn-sm " + (b.dataset.sub === name ? "btn-teal" : "btn-soft"));
+  ["gen","disc","apps","reg","cfg"].forEach(k => $("#sub-"+k).hidden = k !== name);
+  if (name === "apps") renderApps();
+  if (name === "disc") renderDisc();
+  if (name === "reg") renderRegister(); if (name === "cfg") renderCfg();
+}
+$$("[data-sub]").forEach(b => b.addEventListener("click", () => sub(b.dataset.sub)));
+
+function initAdmin(){
+  $("#t-admin").hidden = false;
+  $("#g_trade").innerHTML = (PORTAL.trades||[]).map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
+  $("#g_issue").value = today(); onGenTrade();
+}
+function onGenTrade(){
+  const t = tradeById($("#g_trade").value); if (!t) return;
+  $("#g_duration").value = t.duration; $("#g_batchlist").innerHTML = (t.batches||[]).map(b => `<option value="${esc(b)}">`).join("");
+}
+$("#g_trade").addEventListener("change", onGenTrade);
+
+$("#btnTemplate").addEventListener("click", async () => {
+  const ws = XLSX.utils.aoa_to_sheet([["पंजीकरण संख्या","नाम","पिता/पति का नाम","ग्राम/पता","ग्रेड","मोबाइल"],["YKVM/NF/101","सीता देवी","राम प्रसाद","गुरदहा","A","9876543210"]]);
+  ws["!cols"] = [{wch:18},{wch:24},{wch:24},{wch:20},{wch:8},{wch:14}];
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Trainees");
+  const buf = XLSX.write(wb, {type:"array", bookType:"xlsx"});
+  await saveFile("YKVM-trainee-template.xlsx", new Blob([buf]), $("#g_status"));
+});
+
+let ROWS = [];
+const COLS = { reg:/पंजीकरण|पंजीयन|reg|enrol|roll/i, name:/^\s*(नाम|प्रशिक्षार्थी|trainee|name|student)/i, father:/पिता|पति|father|husband|guardian|s\/o/i, village:/ग्राम|गाँव|गांव|पता|village|address/i, grade:/ग्रेड|grade|श्रेणी/i, mobile:/मोबाइल|mobile|phone|फोन/i };
+$("#g_file").addEventListener("change", async e => {
+  const f = e.target.files[0]; if (!f) return;
+  $("#g_fname").textContent = f.name;
+  try {
+    const wb = XLSX.read(await f.arrayBuffer(), {type:"array"});
+    const aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:"", raw:false});
+    const head = (aoa[0]||[]).map(String); const idx = {};
+    for (const k of ["reg","father","village","grade","mobile","name"]){ const i = head.findIndex((hh,j) => COLS[k].test(hh) && !Object.values(idx).includes(j)); if (i >= 0) idx[k] = i; }
+    if (idx.name === undefined || idx.reg === undefined || idx.father === undefined) throw new Error("शीर्षक पंक्ति में 'पंजीकरण संख्या', 'नाम' और 'पिता/पति का नाम' कॉलम ज़रूरी हैं।");
+    ROWS = aoa.slice(1).filter(r => r.some(c => String(c).trim())).map(r => ({
+      reg:String(r[idx.reg]??"").trim(), name:String(r[idx.name]??"").trim(), father:String(r[idx.father]??"").trim(),
+      village: idx.village!==undefined ? String(r[idx.village]).trim() : "", grade: idx.grade!==undefined ? String(r[idx.grade]).trim() : ""
+    }));
+    renderPreview();
+  } catch(err){ ROWS = []; $("#g_preview").innerHTML = `<p class="note err">${esc(err.message || "फ़ाइल पढ़ी नहीं जा सकी।")}</p>`; $("#btnIssue").disabled = true; }
+});
+function rowProblem(r){
+  if (!r.reg || !r.name || !r.father) return "पंजीकरण/नाम/पिता का नाम खाली";
+  if (REG.certificates.some(c => norm(c.reg) === norm(r.reg) && c.tradeId === $("#g_trade").value)) return "इस ट्रेड में पहले से जारी";
+  return "";
+}
+function renderPreview(){
+  const bad = ROWS.filter(rowProblem).length;
+  $("#g_preview").innerHTML = `<p class="muted" style="font-size:.93rem">${ROWS.length} प्रशिक्षार्थी मिले${bad ? `, जिनमें ${bad} में समस्या है (वे छोड़ दिए जाएँगे)` : ""}।</p>
+  <div class="tablewrap" style="max-height:360px"><table><thead><tr><th>#</th><th>पंजीकरण सं.</th><th>नाम</th><th>पिता/पति</th><th>ग्राम</th><th>ग्रेड</th><th>स्थिति</th></tr></thead><tbody>
+  ${ROWS.map((r,i) => { const p = rowProblem(r); return `<tr><td class="mono">${i+1}</td><td class="mono">${esc(r.reg)}</td><td>${esc(r.name)}</td><td>${esc(r.father)}</td><td>${esc(r.village)}</td><td>${esc(r.grade)}</td><td>${p ? `<span class="pill bad">${esc(p)}</span>` : '<span class="pill ok">ठीक</span>'}</td></tr>`; }).join("")}
+  </tbody></table></div>`;
+  $("#btnIssue").disabled = ROWS.length - bad === 0;
+}
+$("#g_trade").addEventListener("change", () => { if (ROWS.length) renderPreview(); });
+
+let LAST_BATCH = null;
+$("#btnIssue").addEventListener("click", async () => {
+  const st = $("#g_status"), t = tradeById($("#g_trade").value);
+  const meta = { batch:$("#g_batch").value.trim(), duration:$("#g_duration").value.trim(), start:$("#g_start").value, end:$("#g_end").value, issue:$("#g_issue").value };
+  if (!t || !meta.batch || !meta.duration || !meta.start || !meta.end || !meta.issue){ st.innerHTML = '<span style="color:var(--danger)">ट्रेड, बैच, अवधि और तीनों तिथियाँ भरें।</span>'; return; }
+  if (meta.end < meta.start){ st.innerHTML = '<span style="color:var(--danger)">समापन तिथि प्रारम्भ तिथि से पहले नहीं हो सकती।</span>'; return; }
+  const good = ROWS.filter(r => !rowProblem(r)); if (!good.length) return;
+  $("#btnIssue").disabled = true; st.textContent = "सीरियल नंबर बन रहे हैं…";
+  const year = meta.issue.slice(0,4), prefix = `YKVM/${t.code}/${year}/`;
+  let next = REG.certificates.filter(c => c.serial.startsWith(prefix)).reduce((m,c) => Math.max(m, parseInt(c.serial.split("/").pop(),10)||0), 0);
+  const batchId = `B${Date.now().toString(36).toUpperCase()}`;
+  const certs = good.map(r => ({ ...r, tradeId:t.id, trade:t.name, tradeEn:t.en, ...meta, batchId,
+    serial: prefix + String(++next).padStart(4,"0"), code: rnd(4) + "-" + rnd(4) }));
+  const newReg = { batches:[...REG.batches, {batchId, tradeId:t.id, trade:t.name, ...meta, count:certs.length, createdAt:new Date().toISOString()}], certificates:[...REG.certificates, ...certs] };
+  st.textContent = "सत्यापन रजिस्टर में सहेजा जा रहा है…";
+  let saved = false;
+  if (artifactNS){
+    try { await artifactNS.publish({"data/certificates.json": JSON.stringify(newReg)}); saved = true; }
+    catch(e){
+      if (e?.code === "conflict"){ st.innerHTML = '<span style="color:var(--danger)">इसी बीच किसी और ने रजिस्टर बदला। पेज नए संस्करण पर लोड हो रहा है; फिर से "जारी करें" दबाएँ।</span>'; return; }
+      st.innerHTML = `<span style="color:var(--danger)">रजिस्टर सहेजा नहीं जा सका (${esc(e?.code||"error")}).</span>`;
+    }
+  }
+  REG = newReg; LAST_BATCH = certs;
+  st.textContent = (saved ? `${certs.length} प्रमाण पत्र जारी व रजिस्टर में सहेजे गए। ` : "प्रमाण पत्र बने, पर रजिस्टर नहीं सहेजा गया, इसलिए ऑनलाइन सत्यापन काम नहीं करेगा। ") + "PDF बन रही है…";
+  if (!saved){ $("#g_status").insertAdjacentHTML("afterend", '<p class="note warn" id="regWarn">रजिस्टर फ़ाइल सहेजकर Claude को भेजें ताकि पोर्टल में अपडेट हो सके. <button class="btn btn-soft btn-sm" type="button" id="btnRegJson">रजिस्टर JSON सहेजें</button></p>'); $("#btnRegJson").onclick = () => saveFile("certificates.json", JSON.stringify(REG, null, 1), st); }
+  ROWS = []; $("#g_preview").innerHTML = ""; $("#g_fname").textContent = ""; $("#g_file").value = "";
+  await buildPdf(certs, `YKVM-Certificates-${t.code}-${batchId}.pdf`, st);
+  $("#btnPdfAgain").hidden = false;
+});
+$("#btnPdfAgain").addEventListener("click", () => LAST_BATCH && buildPdf(LAST_BATCH, `YKVM-Certificates-${LAST_BATCH[0].tradeId}-${LAST_BATCH[0].batchId}.pdf`, $("#g_status")));
+
+async function buildPdf(certs, filename, st){
+  const { jsPDF } = window.jspdf; const doc = new jsPDF({orientation:"landscape", unit:"mm", format:"a4"});
+  for (let i=0;i<certs.length;i++){
+    st.textContent = `PDF बन रही है… ${i+1}/${certs.length}`;
+    const cv = await drawCertificate(certs[i]);
+    if (i === 0){ $("#g_sample").src = cv.toDataURL("image/jpeg", .8); $("#g_sample").hidden = false; }
+    if (i) doc.addPage("a4","landscape");
+    doc.addImage(cv.toDataURL("image/jpeg", .9), "JPEG", 0, 0, 297, 210);
+    await new Promise(r => setTimeout(r, 0));
+  }
+  st.textContent = `${certs.length} प्रमाण पत्रों की PDF तैयार है।`;
+  await saveFile(filename, doc.output("blob"), st);
+}
+
+function renderRegister(){
+  $("#regCount").textContent = `${REG.certificates.length} प्रमाण पत्र · ${REG.batches.length} बैच`;
+  $("#batchList").innerHTML = REG.batches.length ? `<div class="tablewrap"><table><thead><tr><th>ट्रेड</th><th>बैच</th><th>अवधि</th><th style="text-align:right">संख्या</th><th></th></tr></thead><tbody>
+    ${REG.batches.slice().reverse().map(b => `<tr><td>${esc(b.trade)}</td><td>${esc(b.batch)}</td><td>${fmtDate(b.start)} – ${fmtDate(b.end)}</td><td class="num mono">${b.count}</td><td><button class="btn btn-soft btn-sm" type="button" data-bpdf="${esc(b.batchId)}">PDF</button></td></tr>`).join("")}
+    </tbody></table></div><p class="status" id="bStatus"></p>` : '<p class="muted">अभी कोई प्रमाण पत्र जारी नहीं हुआ। "प्रमाण पत्र बनाएँ" में Excel शीट अपलोड करके पहला बैच जारी करें।</p>';
+  renderRegTable();
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-bpdf]"); if (!b) return; const cs = REG.certificates.filter(c => c.batchId === b.dataset.bpdf); buildPdf(cs, `YKVM-Certificates-${b.dataset.bpdf}.pdf`, $("#bStatus")); });
+function renderRegTable(){
+  const q = norm($("#regSearch").value);
+  const list = REG.certificates.filter(c => !q || norm(c.name + c.serial + c.reg + c.trade).includes(q)).slice(-300).reverse();
+  $("#regTable").innerHTML = list.length ? `<div class="tablewrap" style="max-height:420px"><table><thead><tr><th>सीरियल</th><th>कोड</th><th>पंजीकरण</th><th>नाम</th><th>ट्रेड</th><th>जारी</th></tr></thead><tbody>
+  ${list.map(c => `<tr><td class="mono">${esc(c.serial)}</td><td class="mono">${esc(c.code)}</td><td class="mono">${esc(c.reg)}</td><td>${esc(c.name)}</td><td>${esc(c.trade)}</td><td class="mono">${fmtDate(c.issue)}</td></tr>`).join("")}
+  </tbody></table></div>` : '<p class="muted">कोई रिकॉर्ड नहीं।</p>';
+}
+$("#regSearch").addEventListener("input", renderRegTable);
+$("#btnRegCsv").addEventListener("click", () => {
+  const head = ["serial","code","reg","name","father","village","trade","batch","duration","start","end","issue","grade"];
+  const csv = "﻿" + [head.join(","), ...REG.certificates.map(c => head.map(k => `"${String(c[k]??"").replace(/"/g,'""')}"`).join(","))].join("\n");
+  saveFile("YKVM-certificate-register.csv", csv, $("#bStatus") || $("#cfgStatus"));
+});
+
+/* config editor */
+const CFG = [["c_page","paymentPageUrl"],["c_rzp","razorpayLink"],["c_wa","orgWhatsApp"],["c_mail","orgEmail"],["c_tan","tan"],["c_verify","verifyUrl"],["c_place","certPlace"],["c_s1n","sign1Name"],["c_s1t","sign1Title"],["c_s2n","sign2Name"],["c_s2t","sign2Title"]];
+let DRAFT = null;
+function renderCfg(){
+  if (!DRAFT) DRAFT = JSON.parse(JSON.stringify(PORTAL));
+  CFG.forEach(([id,k]) => $("#"+id).value = DRAFT.settings[k] || "");
+  $("#tradeEditor").innerHTML = DRAFT.trades.map((t,i) => `
+    <div class="tradeedit" data-i="${i}">
+      <div class="grid2">
+        <label class="f"><span>ट्रेड (हिन्दी)</span><input data-k="name" value="${esc(t.name)}"></label>
+        <label class="f"><span>Trade (English)</span><input data-k="en" value="${esc(t.en)}"></label>
+        <label class="f"><span>कोड (सीरियल में)</span><input data-k="code" class="mono" value="${esc(t.code)}"></label>
+        <label class="f"><span>शुल्क (₹)</span><input data-k="fee" type="number" class="mono" value="${esc(t.fee)}"></label>
+        <label class="f"><span>अवधि</span><input data-k="duration" value="${esc(t.duration)}"></label>
+        <label class="check" style="align-self:end"><input type="checkbox" data-k="active" ${t.active!==false?"checked":""}><span>आवेदन के लिए खुला</span></label>
+      </div>
+      <label class="f"><span>विवरण</span><input data-k="about" value="${esc(t.about||"")}"></label>
+      <div class="grid2">
+        <label class="f"><span>बैच (हर पंक्ति एक बैच)</span><textarea data-k="batches">${esc((t.batches||[]).join("\n"))}</textarea></label>
+        <label class="f"><span>अतिरिक्त प्रश्न (हर पंक्ति एक)</span><textarea data-k="extra">${esc((t.extra||[]).join("\n"))}</textarea></label>
+      </div>
+      <div class="row"><button class="btn btn-soft btn-sm" type="button" data-del="${i}">यह ट्रेड हटाएँ</button></div>
+    </div>`).join("");
+}
+function readCfg(){
+  CFG.forEach(([id,k]) => DRAFT.settings[k] = $("#"+id).value.trim());
+  $$(".tradeedit").forEach(box => {
+    const t = DRAFT.trades[+box.dataset.i];
+    box.querySelectorAll("[data-k]").forEach(el => {
+      const k = el.dataset.k;
+      if (k === "active") t.active = el.checked;
+      else if (k === "fee") t.fee = Math.max(0, Math.round(Number(el.value)||0));
+      else if (k === "discount") t.discount = Math.max(0, Number(el.value)||0);
+      else if (k === "batches" || k === "extra") t[k] = el.value.split("\n").map(s => s.trim()).filter(Boolean);
+      else if (k === "code") t.code = el.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+      else t[k] = el.value.trim();
+    });
+  });
+}
+$("#btnAddTrade").addEventListener("click", () => { readCfg(); DRAFT.trades.push({id:"t"+Date.now().toString(36), name:"नया ट्रेड", en:"New Trade", code:"NEW", fee:11000, discount:0, discountType:"amount", duration:"", active:false, batches:[], extra:[], about:""}); renderCfg(); });
+document.addEventListener("click", e => { const d = e.target.closest("[data-del]"); if (!d) return; readCfg(); DRAFT.trades.splice(+d.dataset.del, 1); renderCfg(); });
+$("#btnSaveCfg").addEventListener("click", async () => {
+  readCfg(); const st = $("#cfgStatus");
+  const bad = DRAFT.trades.find(t => !t.name || !t.code);
+  if (bad){ st.innerHTML = '<span style="color:var(--danger)">हर ट्रेड का नाम और कोड भरें।</span>'; return; }
+  if (DRAFT.settings.paymentPageUrl && !/^https:\/\/pages\.razorpay\.com\/pl_[A-Za-z0-9]+/.test(DRAFT.settings.paymentPageUrl)){ st.innerHTML = '<span style="color:var(--danger)">Payment Page का लंबा लिंक डालें, जो https://pages.razorpay.com/pl_ से शुरू हो।</span>'; return; }
+  st.textContent = "सहेजा जा रहा है…";
+  try { await artifactNS.publish({"data/portal.json": JSON.stringify(DRAFT, null, 1)}); PORTAL = JSON.parse(JSON.stringify(DRAFT)); DRAFT = null; renderTrades(); fillTradeSelect(); fillRail(); initAdmin(); renderCfg(); st.textContent = "सहेज लिया गया। प्रशिक्षार्थियों को नई सूची दिखेगी."; }
+  catch(e){ st.innerHTML = `<span style="color:var(--danger)">सहेजा नहीं जा सका (${esc(e?.code||"error")}).</span>`; }
+});
+
+/* trade-wise discount */
+function renderDisc(){
+  $("#discTable").innerHTML = (PORTAL.trades||[]).map((t,i) => `<div class="discrow" data-i="${i}">
+    <div class="dh"><b>${esc(t.name)}</b>${t.active===false?'<span class="pill bad">आवेदन बंद</span>':""}</div>
+    <div class="dg">
+      <label class="f"><span>प्रशिक्षण राशि (₹)</span><input data-d="fee" type="number" min="1" step="1" inputmode="numeric" value="${esc(t.fee)}"></label>
+      <label class="f"><span>छूट की धनराशि (₹)</span><input data-d="discount" type="number" min="0" step="1" inputmode="numeric" placeholder="0" value="${disc(t) || ""}"></label>
+      <div class="f" style="display:grid;gap:5px;font-size:.92rem;font-weight:600"><span>छूट प्रतिशत (%)</span><span class="out pct" data-pct>${pctOf(disc(t), t.fee)}</span></div>
+      <div class="f" style="display:grid;gap:5px;font-size:.92rem;font-weight:600"><span>प्रशिक्षार्थी द्वारा देय (₹)</span><span class="out" data-out>${inr(payable(t))}</span></div>
+    </div>
+    <label class="f"><span>तय राशि वाला Razorpay लिंक (वैकल्पिक)</span><input data-d="payLink" style="font-size:.92rem" placeholder="https://pages.razorpay.com/..." value="${esc(t.payLink||"")}"></label>
+  </div>`).join("");
+}
+function pctOf(d, fee){
+  d = Number(d)||0; fee = Number(fee)||0;
+  if (!fee || !d) return "0%";
+  const p = d / fee * 100;
+  return (Number.isInteger(p) ? p : p.toFixed(2)) + "%";
+}
+function readDiscRow(tr){
+  const g = k => tr.querySelector(`[data-d="${k}"]`).value;
+  return { fee: Math.max(0, Math.round(Number(g("fee"))||0)), discount: Math.max(0, Math.round(Number(g("discount"))||0)), discountType: "amount", payLink: g("payLink").trim() };
+}
+["input","change"].forEach(ev => $("#discTable").addEventListener(ev, e => {
+  const tr = e.target.closest(".discrow[data-i]"); if (!tr) return;
+  const v = readDiscRow(tr), over = v.discount >= v.fee;
+  tr.querySelector("[data-pct]").textContent = over ? "—" : pctOf(v.discount, v.fee);
+  const out = tr.querySelector("[data-out]"); out.textContent = over ? "छूट ज़्यादा है" : inr(payable(v)); out.style.color = over ? "var(--danger)" : "";
+}));
+$("#btnSaveDisc").addEventListener("click", async () => {
+  const st = $("#discStatus"), next = JSON.parse(JSON.stringify(PORTAL)), cleared = [];
+  for (const tr of $$("#discTable .discrow[data-i]")){
+    const t = next.trades[+tr.dataset.i], v = readDiscRow(tr);
+    if (v.fee <= 0){ st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}" की प्रशिक्षण राशि भरें।</span>`; return; }
+    if (v.discount >= v.fee){ st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}" की छूट प्रशिक्षण राशि से कम होनी चाहिए।</span>`; return; }
+    if (v.payLink && !/^https:\/\//.test(v.payLink)){ st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}" का Razorpay लिंक https:// से शुरू होना चाहिए।</span>`; return; }
+    const oldPay = payable(t), newPay = payable(v);
+    if (v.payLink && v.payLink === (t.payLink||"") && oldPay !== newPay){ v.payLink = ""; cleared.push(t.name); }
+    v.payLinkAmount = v.payLink ? newPay : null;
+    Object.assign(t, v);
+  }
+  st.textContent = "सहेजा जा रहा है…";
+  try {
+    if (!artifactNS) throw {code:"unavailable"};
+    await artifactNS.publish({"data/portal.json": JSON.stringify(next, null, 1)});
+    PORTAL = next; DRAFT = null; renderTrades(); fillTradeSelect(); fillRail(); renderDisc();
+    st.innerHTML = "छूट सहेज ली गई। प्रशिक्षार्थियों को अब नई कुल देय राशि दिखेगी।" + (cleared.length ? `<br><span style="color:var(--danger)">राशि बदलने से इन ट्रेड का पुराना Razorpay लिंक हटा दिया गया: ${esc(cleared.join(", "))}. नई राशि का लिंक Razorpay में बनाकर यहाँ डालें.</span>` : "");
+  } catch(e){ st.innerHTML = `<span style="color:var(--danger)">सहेजा नहीं जा सका (${esc(e?.code||"error")}).</span>`; }
+});
+
+/* rail trade picker */
+function fillRail(){
+  const sel = $("#railTrade"), cur = sel.value;
+  sel.innerHTML = '<option value="">— ट्रेड चुनें —</option>' + trades().map(t => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("");
+  sel.value = tradeById(cur) ? cur : ""; railBill();
+}
+function railBill(){
+  const t = tradeById($("#railTrade").value), b = $("#railBill");
+  if (!t){ b.hidden = true; return; }
+  b.innerHTML = `<div><span>प्रशिक्षण राशि</span><span class="v">₹ ${inr(t.fee)}</span></div>
+    <div><span>छूट${t.discountType==="percent" && disc(t) ? " (" + Number(t.discount) + "%)" : ""}</span><span class="v">− ₹ ${inr(disc(t))}</span></div>
+    <div class="tot"><span>कुल देय</span><span class="v">₹ ${inr(payable(t))}</span></div>`;
+  b.hidden = false;
+}
+$("#railTrade").addEventListener("change", railBill);
+$("#railGo").addEventListener("click", () => {
+  show("apply");
+  const id = $("#railTrade").value;
+  if (id && !APP){ $("#s1").hidden = false; $("#selTrade").value = id; onTrade(); setTimeout(() => $("#selBatch").focus(), 50); }
+});
+
+/* ---------- applications register (db, admin-only) ---------- */
+const docId = s => String(s||"").replace(/[^A-Za-z0-9_\-.~:@+]/g, "-").slice(0,180) || ("a" + Date.now());
+async function saveApp(a){
+  if (!dbNS) throw {code:"unavailable"};
+  const rec = { appNo:a.appNo||"", rcptNo:a.rcptNo||"", name:a.name||"", father:a.father||"", dob:a.dob||"", gender:a.gender||"",
+    mobile:a.mobile||"", email:a.email||"", cat:a.cat||"", edu:a.edu||"", address:a.address || [a.village,a.block,a.district,a.pin].filter(Boolean).join(", "),
+    tradeId:a.tradeId||"", trade:a.trade||"", batch:a.batch||"", duration:a.duration||"", fee:Number(a.fee)||0, discount:Number(a.discount)||0,
+    amount:Number(a.amount)||0, payId:a.payId||"", payDate:a.payDate||"", extra:(a.extra||[]).map(([q,v]) => q + ": " + v).join("; "),
+    appDate: a.appDate || a.payDate || "", verified: !!a.verified, addedAt: new Date().toISOString() };
+  await dbNS.collection("applications").doc(docId(rec.appNo || rec.payId)).set(rec);
+}
+function startApps(){
+  claude.use("db").then(d => {
+    dbNS = d;
+    if (!d){ $("#appTable").innerHTML = '<p class="note warn">इस दृश्य में आवेदन रजिस्टर उपलब्ध नहीं है।</p>'; return; }
+    d.collection("applications").onSnapshot(snap => {
+      APPS = snap.docs.map(x => ({ _id:x.id, ...x.data() })).sort((p,q) => String(q.payDate||q.addedAt).localeCompare(String(p.payDate||p.addedAt)));
+      if (!$("#sub-apps").hidden) renderApps();
+    }, () => { $("#appTable").innerHTML = '<p class="note err">आवेदन रजिस्टर लोड नहीं हो सका। पेज रिफ्रेश करें।</p>'; });
+  }).catch(() => {});
+}
+const fromDMY = s => { const m = String(s||"").match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/); return m ? `${m[3]}-${m[2].padStart(2,"0")}-${m[1].padStart(2,"0")}` : ""; };
+const num = s => Number(String(s||"").replace(/[^\d.]/g,"")) || 0;
+function parseWA(text){
+  const blocks = String(text).split(/\*?YKVM प्रशिक्षण आवेदन व शुल्क\*?/).map(b => b.trim()).filter(b => /आवेदन सं/.test(b));
+  return blocks.map(b => {
+    const f = {}, extra = [];
+    b.split(/\r?\n/).forEach(line => {
+      line = line.replace(/^\[[^\]]*\]\s*[^:]*:\s*(?=\S+.*:)/, "").trim();
+      const tm0 = line.match(/^ट्रेड:\s*(.*?)\s+\|\s+(.*)$/); if (tm0){ f.trade = tm0[1]; f.batch = tm0[2]; return; }
+      line.split(/\s+\|\s+/).forEach(part => {
+        const i = part.indexOf(":"); if (i < 0) return;
+        const k = part.slice(0,i).replace(/[*_]/g,"").trim(), v = part.slice(i+1).trim();
+        const map = {"आवेदन सं.":"appNo","रसीद सं.":"rcptNo","नाम":"name","पिता/पति":"father","जन्म तिथि":"dob","लिंग":"gender","मोबाइल":"mobile","ई-मेल":"email","श्रेणी":"cat","योग्यता":"edu","पता":"address","ट्रेड":"trade","अवधि":"duration","प्रशिक्षण राशि":"fee","छूट":"discount","कुल देय/भुगतान":"amount","Razorpay ID":"payId","तिथि":"payDate","आवेदन तिथि":"appDate"};
+        if (map[k]) f[map[k]] = v;
+        else if (k && !/^कृपया/.test(k)) extra.push([k, v]);
+      });
+    });
+    const t = (PORTAL.trades||[]).find(x => x.name === f.trade);
+    return { ...f, tradeId: t?.id || "", duration: f.duration || t?.duration || "", dob: fromDMY(f.dob), payDate: fromDMY(f.payDate), appDate: fromDMY(f.appDate) || fromDMY(f.payDate),
+      fee: num(f.fee), discount: num(f.discount), amount: num(f.amount), cat: f.cat === "-" ? "" : (f.cat||""), extra };
+  }).filter(r => r.appNo && r.name);
+}
+let PARSED = [];
+$("#btnParse").addEventListener("click", () => {
+  PARSED = parseWA($("#waPaste").value);
+  const st = $("#parseStatus");
+  if (!PARSED.length){ st.innerHTML = '<span style="color:var(--danger)">कोई आवेदन नहीं पढ़ा जा सका। पूरा संदेश "*YKVM प्रशिक्षण आवेदन व शुल्क*" से शुरू करके चिपकाएँ।</span>'; $("#parsePreview").innerHTML = ""; return; }
+  const dup = PARSED.filter(r => APPS.some(a => a.appNo === r.appNo)).length;
+  st.textContent = `${PARSED.length} आवेदन पढ़े गए` + (dup ? ` (${dup} पहले से रजिस्टर में हैं, जोड़ने पर अपडेट होंगे)` : "") + "।";
+  $("#parsePreview").innerHTML = `<div class="tablewrap"><table><thead><tr><th>आवेदन सं.</th><th>नाम</th><th>ट्रेड</th><th>बैच</th><th>अवधि</th><th style="text-align:right">भुगतान ₹</th><th>Razorpay ID</th></tr></thead><tbody>
+    ${PARSED.map(r => `<tr><td class="mono">${esc(r.appNo)}</td><td>${esc(r.name)}</td><td>${esc(r.trade)}</td><td>${esc(r.batch)}</td><td>${esc(r.duration)}</td><td class="num mono">${inr(r.amount)}</td><td class="mono">${esc(r.payId)}</td></tr>`).join("")}
+    </tbody></table></div><div class="row"><button class="btn btn-accent" type="button" id="btnAddApps">रजिस्टर में जोड़ें</button></div>`;
+  $("#btnAddApps").onclick = async () => {
+    $("#btnAddApps").disabled = true; let ok = 0;
+    for (const r of PARSED){ try { await saveApp(r); ok++; } catch(e){ st.innerHTML = `<span style="color:var(--danger)">${ok} जुड़े, फिर रुकावट आई (${esc(e?.code||"error")}).</span>`; return; } }
+    st.textContent = `${ok} आवेदन रजिस्टर में जुड़ गए।`; $("#waPaste").value = ""; $("#parsePreview").innerHTML = ""; PARSED = [];
+  };
+});
+function fillXFilters(){
+  const ts = $("#x_trade"), cur = ts.value;
+  ts.innerHTML = '<option value="">सभी ट्रेड</option>' + (PORTAL.trades||[]).map(t => `<option value="${esc(t.name)}">${esc(t.name)}</option>`).join("");
+  ts.value = cur; fillXBatch();
+}
+function fillXBatch(){
+  const tn = $("#x_trade").value, bs = new Set();
+  (PORTAL.trades||[]).filter(t => !tn || t.name === tn).forEach(t => (t.batches||[]).forEach(b => bs.add(b)));
+  APPS.filter(a => !tn || a.trade === tn).forEach(a => a.batch && bs.add(a.batch));
+  REG.certificates.filter(c => !tn || c.trade === tn).forEach(c => c.batch && bs.add(c.batch));
+  const cur = $("#x_batch").value;
+  $("#x_batch").innerHTML = '<option value="">सभी बैच</option>' + [...bs].map(b => `<option value="${esc(b)}">${esc(b)}</option>`).join("");
+  $("#x_batch").value = [...bs].includes(cur) ? cur : "";
+}
+$("#x_trade").addEventListener("change", () => { fillXBatch(); renderAppTable(); renderReports(); });
+["x_batch","x_from","x_to"].forEach(id => $("#"+id).addEventListener("change", () => { renderAppTable(); renderReports(); }));
+const inRange = d => { const f = $("#x_from").value, t = $("#x_to").value; return (!f || (d && d >= f)) && (!t || (d && d <= t)); };
+function filteredApps(){ const tn = $("#x_trade").value, bn = $("#x_batch").value; return APPS.filter(a => (!tn || a.trade === tn) && (!bn || a.batch === bn) && inRange(a.appDate || a.payDate)); }
+function filteredCerts(){ const tn = $("#x_trade").value, bn = $("#x_batch").value; return REG.certificates.filter(c => (!tn || c.trade === tn) && (!bn || c.batch === bn) && inRange(c.end || c.issue)); }
+const certFor = a => REG.certificates.find(c => (c.reg && a.appNo && norm(c.reg) === norm(a.appNo)) || (c.tradeId === a.tradeId && norm(c.name) === norm(a.name) && norm(c.father) === norm(a.father)));
+function daysBetween(a, b){ if (!a || !b) return ""; return Math.round((new Date(b) - new Date(a)) / 864e5) + 1; }
+function reportData(){
+  const apps = filteredApps(), certs = filteredCerts();
+  const daily = {};
+  apps.forEach(a => {
+    const ad = a.appDate || a.payDate || "", pd = a.payDate || "";
+    if (ad){ daily[ad] = daily[ad] || {apps:0, paid:0, amount:0, verified:0}; daily[ad].apps++; }
+    if (pd && inRange(pd)){ daily[pd] = daily[pd] || {apps:0, paid:0, amount:0, verified:0}; daily[pd].paid++; daily[pd].amount += Number(a.amount)||0; if (a.verified) daily[pd].verified++; }
+  });
+  const dailyRows = Object.keys(daily).sort().map(d => ({ date:d, ...daily[d] }));
+  const tb = {};
+  certs.forEach(c => { const k = c.batchId || (c.trade + "|" + c.batch + "|" + c.start); (tb[k] = tb[k] || { trade:c.trade, batch:c.batch, start:c.start, end:c.end, duration:c.duration, issue:c.issue, count:0, people:[] }); tb[k].count++; tb[k].people.push(c); });
+  const trainedRows = Object.values(tb).sort((p,q) => String(p.start).localeCompare(String(q.start)));
+  const ci = {};
+  certs.forEach(c => { const k = c.issue + "|" + c.trade + "|" + c.batch; (ci[k] = ci[k] || { issue:c.issue, trade:c.trade, batch:c.batch, duration:c.duration, start:c.start, end:c.end, count:0, first:c.serial, last:c.serial }); ci[k].count++; ci[k].last = c.serial; });
+  const certRows = Object.values(ci).sort((p,q) => String(p.issue).localeCompare(String(q.issue)));
+  const paid = apps.filter(a => a.payId);
+  return { apps, certs, dailyRows, trainedRows, certRows,
+    totals: { apps: apps.length, paid: paid.length, amount: paid.reduce((s,a) => s + (Number(a.amount)||0), 0), verified: apps.filter(a => a.verified).length,
+      trained: certs.length, batches: trainedRows.length, certs: certs.length, appTrained: apps.filter(certFor).length } };
+}
+function renderReports(){
+  const R = reportData(), T = R.totals;
+  $("#sumTiles").innerHTML = [["कुल आवेदन",T.apps],["भुगतान किया",T.paid],["कुल प्राप्त राशि ₹",inr(T.amount)],["भुगतान सत्यापित",T.verified],["प्रशिक्षण पूर्ण",T.trained],["प्रशिक्षण बैच",T.batches],["प्रमाण पत्र जारी",T.certs]]
+    .map(([k,v]) => `<div><b>${v}</b><span>${k}</span></div>`).join("");
+  $("#rptDaily").innerHTML = R.dailyRows.length ? `<div class="tablewrap" style="max-height:360px"><table><thead><tr><th>दिनांक</th><th style="text-align:right">आवेदन</th><th style="text-align:right">भुगतान</th><th style="text-align:right">राशि ₹</th><th style="text-align:right">सत्यापित</th></tr></thead><tbody>
+    ${R.dailyRows.map(r => `<tr><td class="mono">${fmtDate(r.date)}</td><td class="num mono">${r.apps}</td><td class="num mono">${r.paid}</td><td class="num mono">${inr(r.amount)}</td><td class="num mono">${r.verified}</td></tr>`).join("")}
+    </tbody></table></div>` : '<p class="muted">इस चयन में कोई आवेदन नहीं।</p>';
+  $("#rptTrained").innerHTML = R.trainedRows.length ? `<div class="tablewrap" style="max-height:360px"><table><thead><tr><th>ट्रेड</th><th>बैच</th><th>प्रारम्भ</th><th>समापन</th><th>अवधि</th><th style="text-align:right">दिन</th><th style="text-align:right">प्रशिक्षित</th></tr></thead><tbody>
+    ${R.trainedRows.map(r => `<tr><td>${esc(r.trade)}</td><td>${esc(r.batch)}</td><td class="mono">${fmtDate(r.start)}</td><td class="mono">${fmtDate(r.end)}</td><td>${esc(r.duration)}</td><td class="num mono">${daysBetween(r.start, r.end)}</td><td class="num mono">${r.count}</td></tr>`).join("")}
+    </tbody></table></div>` : '<p class="muted">इस चयन में अभी किसी बैच का प्रशिक्षण पूर्ण दर्ज नहीं। प्रमाण पत्र जारी होते ही बैच यहाँ दिखेगा।</p>';
+  $("#rptCerts").innerHTML = R.certRows.length ? `<div class="tablewrap" style="max-height:360px"><table><thead><tr><th>जारी तिथि</th><th>ट्रेड</th><th>बैच</th><th>अवधि</th><th>प्रशिक्षण तिथियाँ</th><th>सीरियल</th><th style="text-align:right">संख्या</th></tr></thead><tbody>
+    ${R.certRows.map(r => `<tr><td class="mono">${fmtDate(r.issue)}</td><td>${esc(r.trade)}</td><td>${esc(r.batch)}</td><td>${esc(r.duration)}</td><td class="mono">${fmtDate(r.start)} – ${fmtDate(r.end)}</td><td class="mono">${esc(r.first)}${r.count>1 ? " से " + esc(r.last) : ""}</td><td class="num mono">${r.count}</td></tr>`).join("")}
+    </tbody></table></div>` : '<p class="muted">इस चयन में कोई प्रमाण पत्र जारी नहीं।</p>';
+}
+function renderApps(){ fillXFilters(); renderAppTable(); renderReports(); }
+function renderAppTable(){
+  const list = filteredApps(), sum = list.reduce((s,a) => s + (Number(a.amount)||0), 0);
+  $("#appCount").textContent = `${list.length} आवेदन · कुल ₹${inr(sum)}`;
+  $("#appTable").innerHTML = list.length ? `<div class="tablewrap" style="max-height:460px"><table><thead><tr><th>सत्यापित</th><th>आवेदन सं.</th><th>नाम</th><th>मोबाइल</th><th>ट्रेड</th><th>बैच</th><th>अवधि</th><th style="text-align:right">शुल्क</th><th style="text-align:right">छूट</th><th style="text-align:right">भुगतान</th><th>Razorpay ID</th><th>तिथि</th></tr></thead><tbody>
+    ${list.map(a => `<tr><td><input type="checkbox" data-ver="${esc(a._id)}" ${a.verified?"checked":""} aria-label="भुगतान सत्यापित"></td><td class="mono">${esc(a.appNo)}</td><td>${esc(a.name)}</td><td class="mono">${esc(a.mobile)}</td><td>${esc(a.trade)}</td><td>${esc(a.batch)}</td><td>${esc(a.duration)}</td><td class="num mono">${inr(a.fee)}</td><td class="num mono">${inr(a.discount)}</td><td class="num mono">${inr(a.amount)}</td><td class="mono">${esc(a.payId)}</td><td class="mono">${fmtDate(a.payDate)}</td></tr>`).join("")}
+    </tbody></table></div><p class="muted" style="font-size:.88rem">Razorpay डैशबोर्ड से भुगतान मिलान के बाद "सत्यापित" पर टिक करें।</p>` : '<p class="muted">अभी कोई आवेदन रजिस्टर में नहीं है। ऊपर WhatsApp संदेश चिपकाकर पहला आवेदन जोड़ें।</p>';
+}
+document.addEventListener("change", async e => {
+  const id = e.target.dataset?.ver; if (!id || !dbNS) return;
+  e.target.disabled = true;
+  try { await dbNS.collection("applications").doc(id).update({ verified: e.target.checked }); }
+  catch(err){ e.target.checked = !e.target.checked; }
+  e.target.disabled = false;
+});
+$("#btnXlsx").addEventListener("click", async () => {
+  const st = $("#x_status"), tn = $("#x_trade").value, bn = $("#x_batch").value, R = reportData(), T = R.totals;
+  const wb = XLSX.utils.book_new();
+  const add = (rows, name, widths) => { const ws = XLSX.utils.aoa_to_sheet(rows); ws["!cols"] = widths.map(w => ({wch:w})); XLSX.utils.book_append_sheet(wb, ws, name); };
+  const f = $("#x_from").value, t = $("#x_to").value;
+  add([["युवा कौशल विकास मण्डल: प्रशिक्षण रिपोर्ट"],["रिपोर्ट तिथि", fmtDate(today())],["ट्रेड", tn || "सभी"],["बैच", bn || "सभी"],["अवधि (से–तक)", (f ? fmtDate(f) : "शुरू से") + " – " + (t ? fmtDate(t) : "आज तक")],[],
+    ["विवरण","संख्या / राशि"],["कुल आवेदन", T.apps],["भुगतान करने वाले", T.paid],["कुल प्राप्त राशि (₹)", T.amount],["भुगतान सत्यापित", T.verified],["सफलतापूर्वक प्रशिक्षण प्राप्त", T.trained],["प्रशिक्षण बैच", T.batches],["प्रमाण पत्र जारी", T.certs],["ऑनलाइन आवेदकों में से प्रशिक्षित", T.appTrained]], "सारांश", [34,22]);
+  const D = [["दिनांक","आवेदन","भुगतान","राशि (₹)","सत्यापित"]].concat(R.dailyRows.map(r => [fmtDate(r.date), r.apps, r.paid, r.amount, r.verified]));
+  if (R.dailyRows.length) D.push(["कुल", R.dailyRows.reduce((s,r)=>s+r.apps,0), R.dailyRows.reduce((s,r)=>s+r.paid,0), R.dailyRows.reduce((s,r)=>s+r.amount,0), R.dailyRows.reduce((s,r)=>s+r.verified,0)]);
+  add(D, "दिनांकवार आवेदन-भुगतान", [14,10,10,14,10]);
+  add([["क्रम","आवेदन तिथि","आवेदन संख्या","रसीद संख्या","नाम","पिता/पति का नाम","जन्म तिथि","लिंग","मोबाइल","ई-मेल","श्रेणी","शैक्षिक योग्यता","पता","ट्रेड","बैच","अवधि","प्रशिक्षण राशि (₹)","छूट (₹)","भुगतान राशि (₹)","Razorpay Payment ID","भुगतान तिथि","भुगतान सत्यापित","प्रशिक्षण स्थिति","प्रमाण पत्र सीरियल","अतिरिक्त जानकारी"]]
+    .concat(R.apps.map((a,i) => { const c = certFor(a); return [i+1, fmtDate(a.appDate||a.payDate), a.appNo, a.rcptNo, a.name, a.father, fmtDate(a.dob), a.gender, a.mobile, a.email, a.cat, a.edu, a.address, a.trade, a.batch, a.duration, +a.fee||0, +a.discount||0, +a.amount||0, a.payId, fmtDate(a.payDate), a.verified?"हाँ":"नहीं", c ? "प्रशिक्षण पूर्ण" : (a.payId ? "भुगतान प्राप्त" : "आवेदन"), c ? c.serial : "", a.extra]; })),
+    "आवेदन व भुगतान", [6,12,26,24,22,22,12,8,13,26,14,14,30,20,34,10,14,10,14,22,12,10,14,20,30]);
+  const TR = [["क्रम","ट्रेड","बैच","प्रारम्भ तिथि","समापन तिथि","अवधि","कुल दिन","प्रशिक्षित संख्या","प्रमाण पत्र जारी तिथि"]].concat(R.trainedRows.map((r,i) => [i+1, r.trade, r.batch, fmtDate(r.start), fmtDate(r.end), r.duration, daysBetween(r.start,r.end), r.count, fmtDate(r.issue)]));
+  if (R.trainedRows.length) TR.push(["","","","","","","कुल", R.trainedRows.reduce((s,r)=>s+r.count,0)]);
+  add(TR, "प्रशिक्षण पूर्ण (बैचवार)", [6,20,34,13,13,10,8,14,16]);
+  add([["क्रम","पंजीकरण संख्या","नाम","पिता/पति का नाम","ग्राम/पता","ट्रेड","बैच","प्रारम्भ तिथि","समापन तिथि","अवधि","ग्रेड","स्थिति"]].concat(R.certs.map((c,i) => [i+1, c.reg, c.name, c.father, c.village, c.trade, c.batch, fmtDate(c.start), fmtDate(c.end), c.duration, c.grade||"", "सफलतापूर्वक प्रशिक्षण प्राप्त"])), "प्रशिक्षित प्रशिक्षार्थी", [6,18,22,22,18,20,34,13,13,10,8,24]);
+  const CI = [["जारी तिथि","ट्रेड","बैच","अवधि","प्रारम्भ तिथि","समापन तिथि","सीरियल (से)","सीरियल (तक)","संख्या"]].concat(R.certRows.map(r => [fmtDate(r.issue), r.trade, r.batch, r.duration, fmtDate(r.start), fmtDate(r.end), r.first, r.last, r.count]));
+  if (R.certRows.length) CI.push(["कुल","","","","","","","", R.certRows.reduce((s,r)=>s+r.count,0)]);
+  add(CI, "प्रमाण पत्र (तिथिवार)", [12,20,34,10,13,13,20,20,8]);
+  add([["क्रम","सीरियल नंबर","सत्यापन कोड","पंजीकरण संख्या","नाम","पिता/पति का नाम","ग्राम/पता","ट्रेड","बैच","अवधि","प्रारम्भ तिथि","समापन तिथि","जारी तिथि","ग्रेड"]].concat(R.certs.map((c,i) => [i+1,c.serial,c.code,c.reg,c.name,c.father,c.village,c.trade,c.batch,c.duration,fmtDate(c.start),fmtDate(c.end),fmtDate(c.issue),c.grade||""])), "प्रमाण पत्र (पूरा विवरण)", [6,20,12,18,22,22,18,20,34,10,12,12,12,8]);
+  const TB = [["ट्रेड","Trade","कोड","अवधि","बैच","प्रशिक्षण राशि (₹)","छूट (₹)","कुल देय (₹)","आवेदन स्थिति"]];
+  (PORTAL.trades||[]).filter(x => !tn || x.name === tn).forEach(x => ((x.batches||[]).length ? x.batches : [""]).filter(b => !bn || b === bn).forEach(b => TB.push([x.name,x.en,x.code,x.duration,b,+x.fee||0,disc(x),payable(x),x.active===false?"बंद":"खुला"])));
+  add(TB, "ट्रेड-बैच-शुल्क", [20,24,8,10,36,14,10,12,10]);
+  const buf = XLSX.write(wb, {type:"array", bookType:"xlsx"});
+  const tag = [tn, bn].filter(Boolean).join("-").replace(/[^\wऀ-ॿ-]+/g,"_") || "सम्पूर्ण";
+  await saveFile(`YKVM-रिपोर्ट-${tag}-${today()}.xlsx`, new Blob([buf]), st);
+});
+
+/* ---------- boot ---------- */
+load().then(async () => {
+  if (!window.claude?.use || !PORTAL) return;
+  claude.use("downloads").then(d => { downloadsNS = d; }).catch(() => {});
+  try {
+    const user = await claude.use("user");
+    isEditor = !!(user && ((await user.isOwner()) || (await user.canEdit())));
+    if (isEditor){ artifactNS = await claude.use("artifact"); initAdmin(); startApps(); if (location.hash === "#admin") show("admin"); }
+  } catch(e){}
+});
+})();
+</script>
+
+</body>
+</html>

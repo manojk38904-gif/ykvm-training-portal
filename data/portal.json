@@ -1,0 +1,136 @@
+{
+ "settings": {
+  "razorpayLink": "https://razorpay.me/@yuvakaushalvikasmandal",
+  "orgWhatsApp": "918400032827",
+  "orgEmail": "yuvak22814@gmail.com",
+  "tan": "AGRY10339A",
+  "verifyUrl": "https://claude.ai/artifact/XMs1WAyKfX1ZaGPywZ6oLc",
+  "certPlace": "मौदहा, हमीरपुर (उ.प्र.)",
+  "sign1Name": "मनोज कुमार कुशवाहा",
+  "sign1Title": "सचिव / प्रबंधक",
+  "sign2Name": "पुष्पेन्द्र कुमार",
+  "sign2Title": "अध्यक्ष"
+ },
+ "trades": [
+  {
+   "id": "nf",
+   "name": "प्राकृतिक खेती",
+   "en": "Natural Farming",
+   "code": "NF",
+   "fee": 11000,
+   "duration": "7 दिवस",
+   "active": true,
+   "batches": [
+    "बैच-1 : 20 अक्टूबर – 26 अक्टूबर 2026",
+    "बैच-2 : 10 नवम्बर – 16 नवम्बर 2026"
+   ],
+   "extra": [
+    "कृषि भूमि (बीघा में)",
+    "मुख्य फसलें"
+   ],
+   "about": "जीवामृत, घनजीवामृत, बीजामृत, प्राकृतिक कीटनाशक बनाना और देसी गाय आधारित खेती।",
+   "discount": 10999,
+   "discountType": "amount",
+   "payLink": "",
+   "payLinkAmount": null
+  },
+  {
+   "id": "mlf",
+   "name": "मल्टीलेयर सब्जी खेती",
+   "en": "Multilayer Vegetable Farming",
+   "code": "MLF",
+   "fee": 11000,
+   "duration": "5 दिवस",
+   "active": true,
+   "batches": [
+    "बैच-1 : 27 अक्टूबर – 31 अक्टूबर 2026"
+   ],
+   "extra": [
+    "कृषि भूमि (बीघा में)"
+   ],
+   "about": "बाँस, तार और जाली से मल्टीलेयर ढाँचा, कम ज़मीन में चार परतों की सब्ज़ी।",
+   "discount": 8000,
+   "discountType": "amount",
+   "payLink": "",
+   "payLinkAmount": null
+  },
+  {
+   "id": "msh",
+   "name": "मशरूम उत्पादन",
+   "en": "Mushroom Production",
+   "code": "MSH",
+   "fee": 11000,
+   "duration": "5 दिवस",
+   "active": true,
+   "batches": [
+    "बैच-1 : 03 नवम्बर – 07 नवम्बर 2026"
+   ],
+   "extra": [],
+   "about": "ऑयस्टर मशरूम की बैग विधि, स्पॉन, नमी प्रबंधन और बाज़ार तक बिक्री।",
+   "discount": 10999,
+   "discountType": "amount",
+   "payLink": "",
+   "payLinkAmount": null
+  },
+  {
+   "id": "goat",
+   "name": "बकरी पालन",
+   "en": "Goat Rearing",
+   "code": "GR",
+   "fee": 11000,
+   "duration": "7 दिवस",
+   "active": true,
+   "batches": [
+    "बैच-1 : 17 नवम्बर – 23 नवम्बर 2026"
+   ],
+   "extra": [
+    "वर्तमान पशु संख्या"
+   ],
+   "about": "नस्ल चयन, शेड, चारा, टीकाकरण और दूध व दुग्ध उत्पादों से आय।",
+   "discount": 5340,
+   "discountType": "amount",
+   "payLink": "",
+   "payLinkAmount": null
+  },
+  {
+   "id": "tlr",
+   "name": "सिलाई-कढ़ाई",
+   "en": "Tailoring & Embroidery",
+   "code": "TLR",
+   "fee": 11000,
+   "duration": "30 दिवस",
+   "active": true,
+   "batches": [
+    "बैच-1 : 02 नवम्बर – 01 दिसम्बर 2026"
+   ],
+   "extra": [
+    "क्या आपके पास सिलाई मशीन है?"
+   ],
+   "about": "नाप लेना, कटिंग, ब्लाउज़-सूट सिलाई और मशीन कढ़ाई; स्वावलंबन के लिए।",
+   "discount": 5340,
+   "discountType": "amount",
+   "payLink": "",
+   "payLinkAmount": null
+  },
+  {
+   "id": "cmp",
+   "name": "कंप्यूटर बेसिक",
+   "en": "Basic Computer",
+   "code": "CMP",
+   "fee": 11000,
+   "duration": "45 दिवस",
+   "active": true,
+   "batches": [
+    "बैच-1 : 02 नवम्बर – 16 दिसम्बर 2026"
+   ],
+   "extra": [
+    "अंतिम पास कक्षा / डिग्री"
+   ],
+   "about": "कंप्यूटर संचालन, MS Office, इंटरनेट, ई-मेल और डिजिटल भुगतान।",
+   "discount": 5340,
+   "discountType": "amount",
+   "payLink": "",
+   "payLinkAmount": null
+  }
+ ]
+}
