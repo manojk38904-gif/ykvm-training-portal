@@ -68,6 +68,17 @@ a{color:var(--teal)}
 .sumgrid div{border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:2px}
 .sumgrid b{font-family:var(--f-mono);font-size:1.5rem;font-variant-numeric:tabular-nums}
 .sumgrid span{font-size:.85rem;color:var(--muted)}
+.linkbtn{appearance:none;background:none;border:1px solid var(--line);border-radius:999px;padding:4px 12px;font:500 .82rem var(--f-body);color:var(--muted);cursor:pointer;justify-self:start}
+.linkbtn:hover{color:var(--ink);border-color:var(--muted)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(10,20,18,.55);display:grid;place-items:center;padding:16px}
+.modal .box{background:var(--surface);color:var(--ink);border-radius:16px;max-width:460px;width:100%;padding:22px;display:grid;gap:14px;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal .box h3{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.modal .x{appearance:none;border:0;background:var(--sunk);color:var(--ink);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:1.1rem}
+.adminbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--surface)}
+.discrow .dh .acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;cursor:pointer}
+.toggle input{width:auto;accent-color:var(--leaf);transform:scale(1.25)}
+.warnline{border-radius:10px;padding:10px 12px;font-size:.88rem;background:var(--danger-soft);color:var(--danger)}
 .railbox{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;font-size:.92rem}
 .railbox .k{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
 
@@ -420,15 +431,16 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
     <!-- ADMIN -->
     <section class="view" id="v-admin" hidden>
       <div style="display:grid;gap:8px"><span class="eyebrow">केवल संस्था के लिए</span><h2>प्रबंधन</h2></div>
+      <div class="adminbar" id="adminBar" hidden><span class="muted" id="adminWho" style="font-size:.9rem"></span><button class="btn btn-ghost btn-sm" type="button" id="btnLogout">Logout / प्रबंधन से बाहर निकलें</button></div>
       <div class="row" role="tablist" aria-label="प्रबंधन">
-        <button class="btn btn-sm btn-teal" type="button" data-sub="gen">प्रमाण पत्र बनाएँ</button>
-        <button class="btn btn-sm btn-soft" type="button" data-sub="disc">ट्रेड वाइज छूट व भुगतान</button>
+        <button class="btn btn-sm btn-teal" type="button" data-sub="disc">शुल्क एवं छूट प्रबंधन</button>
+        <button class="btn btn-sm btn-soft" type="button" data-sub="gen">प्रमाण पत्र बनाएँ</button>
         <button class="btn btn-sm btn-soft" type="button" data-sub="apps">रिपोर्ट, रजिस्टर व Excel</button>
         <button class="btn btn-sm btn-soft" type="button" data-sub="reg">प्रमाण पत्र रजिस्टर</button>
-        <button class="btn btn-sm btn-soft" type="button" data-sub="cfg">प्रशिक्षण, बैच व सेटिंग</button>
+        <button class="btn btn-sm btn-soft" type="button" data-sub="cfg">भुगतान व प्रमाण पत्र सेटिंग</button>
       </div>
 
-      <div id="sub-gen" class="form">
+      <div id="sub-gen" class="form" hidden>
         <div class="panel">
           <h3>1. प्रशिक्षण का विवरण</h3>
           <div class="grid2">
@@ -460,13 +472,13 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
         </div>
       </div>
 
-      <div id="sub-disc" class="form" hidden>
+      <div id="sub-disc" class="form">
         <div class="panel">
-          <h3>ट्रेड वाइज छूट</h3>
-          <p class="muted" style="font-size:.93rem">हर ट्रेड की छूट सीधे रुपये में भरें। "कुल देय" वही राशि है जो प्रशिक्षार्थी को दिखेगी और जिसका भुगतान उसे करना है; वह इसे बदल नहीं सकता। अगर Razorpay में इस राशि का तय Payment Link बनाया है तो उसे भी यहाँ चिपकाएँ।</p>
+          <div class="row" style="justify-content:space-between"><h3>प्रशिक्षण शुल्क एवं छूट प्रबंधन</h3><button class="btn btn-soft btn-sm" type="button" id="btnAddTrade2">+ नया प्रशिक्षण जोड़ें</button></div>
+          <p class="muted" style="font-size:.93rem">हर प्रशिक्षण का नाम, अवधि, मूल शुल्क, छूट, बैच, अतिरिक्त प्रश्न, आवेदन खुला/बंद, विवरण और Razorpay लिंक यहीं बदलें। छूट की राशि भरते ही छूट प्रतिशत और प्रशिक्षार्थी द्वारा कुल देय राशि तुरंत दिखती है। "Save Changes / सेटिंग सहेजें" दबाने पर बदलाव पूरे पोर्टल पर लागू हो जाते हैं।</p>
           <p class="note" style="font-size:.9rem">Razorpay में राशि अपने-आप भरी आए, इसके लिए हर ट्रेड की "कुल देय" राशि का एक Payment Page बनाएँ: <a href="https://dashboard.razorpay.com/app/paymentpages" target="_blank" rel="noopener">Razorpay डैशबोर्ड → Payment Pages</a> → नया पेज → राशि "Fixed amount" रखकर कुल देय भरें → पेज का लिंक कॉपी करके नीचे उस ट्रेड में चिपकाएँ। (Payment Page एक ही लिंक से कई प्रशिक्षार्थियों का भुगतान लेता है।) छूट बदलने पर पुराना लिंक अपने-आप हट जाता है, ताकि कोई पुरानी राशि न भरे।</p>
           <div id="discTable" class="disclist"></div>
-          <div class="row"><button class="btn btn-accent" type="button" id="btnSaveDisc">छूट सहेजें</button><span class="status" id="discStatus"></span></div>
+          <div class="row"><button class="btn btn-accent" type="button" id="btnSaveDisc">Save Changes / सेटिंग सहेजें</button><span class="status" id="discStatus"></span></div>
         </div>
       </div>
 
@@ -543,10 +555,13 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
             <label class="f"><span>हस्ताक्षर 2: पद</span><input id="c_s2t"></label>
           </div>
         </div>
-        <div class="panel">
-          <div class="row" style="justify-content:space-between"><h3>प्रशिक्षण ट्रेड व बैच</h3><button class="btn btn-soft btn-sm" type="button" id="btnAddTrade">+ नया ट्रेड</button></div>
-          <p class="muted" style="font-size:.9rem">हर बैच नई पंक्ति में लिखें। "अतिरिक्त प्रश्न" उस ट्रेड के आवेदन फॉर्म में जुड़ते हैं; हर प्रश्न नई पंक्ति में।</p>
-          <div id="tradeEditor" class="form"></div>
+        <div class="panel" id="pwPanel" hidden>
+          <h3>Admin पासवर्ड बदलें</h3>
+          <div class="grid2">
+            <label class="f"><span>नया पासवर्ड (कम से कम 10 अक्षर)</span><input id="np1" type="password" autocomplete="new-password"></label>
+            <label class="f"><span>नया पासवर्ड दोबारा</span><input id="np2" type="password" autocomplete="new-password"></label>
+          </div>
+          <div class="row"><button class="btn btn-soft btn-sm" type="button" id="btnChangePw">पासवर्ड बदलें</button><span class="status" id="pwStatus"></span></div>
         </div>
         <div class="row"><button class="btn btn-accent" type="button" id="btnSaveCfg">सेटिंग सहेजें</button><span class="status" id="cfgStatus"></span></div>
       </div>
@@ -555,8 +570,29 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
     <footer>
       <span>युवा कौशल विकास मण्डल · पंजीकृत सोसाइटी 356/2014-15 · PAN AAAAY3865G · 12A AAAAY3865G25LK01 · 80G AAAAY3865G25LK02</span>
       <span>प्रज्ञा पीठ तेवन बाबा, मराठीपुरा, मौदहा, हमीरपुर (उ.प्र.) 210507 · <a href="https://ykvmup.org" target="_blank" rel="noopener">ykvmup.org</a></span>
+      <button class="linkbtn" type="button" id="btnAdminLogin" hidden>Admin Login / प्रबंधन</button>
     </footer>
   </main>
+</div>
+
+<div class="modal" id="loginModal" hidden role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+  <div class="box">
+    <h3><span id="loginTitle">Admin Login / प्रबंधन</span><button class="x" type="button" id="btnLoginClose" aria-label="बंद करें">×</button></h3>
+    <p class="muted" id="loginWait" style="font-size:.93rem">जाँच हो रही है…</p>
+    <form id="loginForm" hidden novalidate>
+      <label class="f"><span>Admin पासवर्ड</span><input id="lg_pw" type="password" autocomplete="current-password"></label>
+      <p class="note err" id="lg_err" hidden></p>
+      <div class="row"><button class="btn btn-accent" type="submit" id="lg_btn">लॉगिन करें</button></div>
+    </form>
+    <form id="setupForm" hidden novalidate>
+      <p class="note" style="font-size:.9rem">पहली बार सेटअप: GitHub का एक Fine-grained token बनाएँ जिसे केवल <b>ykvm-training-portal</b> repository पर <b>Contents: Read and write</b> की अनुमति हो (<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">यहाँ बनाएँ</a>)। फिर एक मज़बूत Admin पासवर्ड चुनें। टोकन इसी पासवर्ड से एन्क्रिप्ट होकर सहेजा जाएगा; आगे केवल पासवर्ड से लॉगिन होगा।</p>
+      <label class="f"><span>GitHub token</span><input id="su_tok" type="password" autocomplete="off" class="mono" placeholder="github_pat_..."></label>
+      <label class="f"><span>नया Admin पासवर्ड (कम से कम 10 अक्षर)</span><input id="su_pw1" type="password" autocomplete="new-password"></label>
+      <label class="f"><span>पासवर्ड दोबारा</span><input id="su_pw2" type="password" autocomplete="new-password"></label>
+      <p class="note err" id="su_err" hidden></p>
+      <div class="row"><button class="btn btn-accent" type="submit" id="su_btn">सेटअप पूरा करें</button></div>
+    </form>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -581,9 +617,11 @@ let artifactNS = null, downloadsNS = null, dbNS = null, isEditor = false, APPS =
 
 /* ---------- tabs ---------- */
 function show(tab){
+  if (tab === "admin" && !isEditor){ openLogin(); return; }
   $$(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.tab === tab)));
   $$("section.view").forEach(v => v.hidden = v.id !== "v-" + tab);
-  window.scrollTo({top:0, behavior:"auto"});
+  if (tab !== "profile" && window.innerWidth <= 900) document.querySelector("main").scrollIntoView({block:"start"});
+  else window.scrollTo({top:0, behavior:"auto"});
 }
 $$(".tab").forEach(t => t.addEventListener("click", () => show(t.dataset.tab)));
 document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) show(g.dataset.go); });
@@ -636,8 +674,8 @@ async function saveFile(filename, data, statusEl){
 async function load(){
   try {
     const [p, r] = await Promise.all([
-      fetch("data/portal.json", {cache:"no-store"}).then(x => x.json()),
-      fetch("data/certificates.json", {cache:"no-store"}).then(x => x.json()).catch(() => ({batches:[],certificates:[]}))
+      fetch("data/portal.json?v=" + Date.now(), {cache:"no-store"}).then(x => x.json()),
+      fetch("data/certificates.json?v=" + Date.now(), {cache:"no-store"}).then(x => x.json()).catch(() => ({batches:[],certificates:[]}))
     ]);
     PORTAL = p; REG = r && r.certificates ? r : {batches:[],certificates:[]};
   } catch(e){
@@ -762,7 +800,7 @@ $("#btnReceipt").addEventListener("click", async () => {
   APP.rcptNo = APP.rcptNo || `YKVM/RCPT/${finYear(pdate)}/${String(Date.now()).slice(-7)}`;
   ss.set("ykvm_app", APP);
   await renderReceipt();
-  if (dbNS && isEditor) saveApp(APP).catch(() => {});
+  if ((dbNS || SESSION) && isEditor) saveApp(APP).catch(() => {});
 });
 function finYear(iso){ const [y,m] = iso.split("-").map(Number); const s = m >= 4 ? y : y-1; return `${s}-${String(s+1).slice(-2)}`; }
 
@@ -977,7 +1015,7 @@ $("#verifyForm").addEventListener("submit", async e => {
 /* ---------- admin ---------- */
 function sub(name){
   $$("[data-sub]").forEach(b => b.className = "btn btn-sm " + (b.dataset.sub === name ? "btn-teal" : "btn-soft"));
-  ["gen","disc","apps","reg","cfg"].forEach(k => $("#sub-"+k).hidden = k !== name);
+  ["disc","gen","apps","reg","cfg"].forEach(k => $("#sub-"+k).hidden = k !== name);
   if (name === "apps") renderApps();
   if (name === "disc") renderDisc();
   if (name === "reg") renderRegister(); if (name === "cfg") renderCfg();
@@ -1009,7 +1047,7 @@ $("#g_file").addEventListener("change", async e => {
   const f = e.target.files[0]; if (!f) return;
   $("#g_fname").textContent = f.name;
   try {
-    const wb = XLSX.read(await f.arrayBuffer(), {type:"array"});
+    const wb = /\.csv$/i.test(f.name) ? XLSX.read((await f.text()).replace(/^\ufeff/, ""), {type:"string"}) : XLSX.read(await f.arrayBuffer(), {type:"array"});
     const aoa = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:"", raw:false});
     const head = (aoa[0]||[]).map(String); const idx = {};
     for (const k of ["reg","father","village","grade","mobile","name"]){ const i = head.findIndex((hh,j) => COLS[k].test(hh) && !Object.values(idx).includes(j)); if (i >= 0) idx[k] = i; }
@@ -1052,8 +1090,8 @@ $("#btnIssue").addEventListener("click", async () => {
   const newReg = { batches:[...REG.batches, {batchId, tradeId:t.id, trade:t.name, ...meta, count:certs.length, createdAt:new Date().toISOString()}], certificates:[...REG.certificates, ...certs] };
   st.textContent = "सत्यापन रजिस्टर में सहेजा जा रहा है…";
   let saved = false;
-  if (artifactNS){
-    try { await artifactNS.publish({"data/certificates.json": JSON.stringify(newReg)}); saved = true; }
+  if (canPersist()){
+    try { await persist({"data/certificates.json": JSON.stringify(newReg)}, `प्रमाण पत्र जारी: ${t.name} (${certs.length})`); saved = true; }
     catch(e){
       if (e?.code === "conflict"){ st.innerHTML = '<span style="color:var(--danger)">इसी बीच किसी और ने रजिस्टर बदला। पेज नए संस्करण पर लोड हो रहा है; फिर से "जारी करें" दबाएँ।</span>'; return; }
       st.innerHTML = `<span style="color:var(--danger)">रजिस्टर सहेजा नहीं जा सका (${esc(e?.code||"error")}).</span>`;
@@ -1110,7 +1148,7 @@ let DRAFT = null;
 function renderCfg(){
   if (!DRAFT) DRAFT = JSON.parse(JSON.stringify(PORTAL));
   CFG.forEach(([id,k]) => $("#"+id).value = DRAFT.settings[k] || "");
-  $("#tradeEditor").innerHTML = DRAFT.trades.map((t,i) => `
+  const te = $("#tradeEditor"); if (te) te.innerHTML = DRAFT.trades.map((t,i) => `
     <div class="tradeedit" data-i="${i}">
       <div class="grid2">
         <label class="f"><span>ट्रेड (हिन्दी)</span><input data-k="name" value="${esc(t.name)}"></label>
@@ -1143,30 +1181,49 @@ function readCfg(){
     });
   });
 }
-$("#btnAddTrade").addEventListener("click", () => { readCfg(); DRAFT.trades.push({id:"t"+Date.now().toString(36), name:"नया ट्रेड", en:"New Trade", code:"NEW", fee:11000, discount:0, discountType:"amount", duration:"", active:false, batches:[], extra:[], about:""}); renderCfg(); });
+$("#btnAddTrade")?.addEventListener("click", () => { readCfg(); DRAFT.trades.push({id:"t"+Date.now().toString(36), name:"नया ट्रेड", en:"New Trade", code:"NEW", fee:11000, discount:0, discountType:"amount", duration:"", active:false, batches:[], extra:[], about:""}); renderCfg(); });
 document.addEventListener("click", e => { const d = e.target.closest("[data-del]"); if (!d) return; readCfg(); DRAFT.trades.splice(+d.dataset.del, 1); renderCfg(); });
 $("#btnSaveCfg").addEventListener("click", async () => {
   readCfg(); const st = $("#cfgStatus");
-  const bad = DRAFT.trades.find(t => !t.name || !t.code);
-  if (bad){ st.innerHTML = '<span style="color:var(--danger)">हर ट्रेड का नाम और कोड भरें।</span>'; return; }
   if (DRAFT.settings.paymentPageUrl && !/^https:\/\/pages\.razorpay\.com\/pl_[A-Za-z0-9]+/.test(DRAFT.settings.paymentPageUrl)){ st.innerHTML = '<span style="color:var(--danger)">Payment Page का लंबा लिंक डालें, जो https://pages.razorpay.com/pl_ से शुरू हो।</span>'; return; }
   st.textContent = "सहेजा जा रहा है…";
-  try { await artifactNS.publish({"data/portal.json": JSON.stringify(DRAFT, null, 1)}); PORTAL = JSON.parse(JSON.stringify(DRAFT)); DRAFT = null; renderTrades(); fillTradeSelect(); fillRail(); initAdmin(); renderCfg(); st.textContent = "सहेज लिया गया। प्रशिक्षार्थियों को नई सूची दिखेगी."; }
+  try { const base = await freshPortal(); base.settings = DRAFT.settings; await persist({"data/portal.json": JSON.stringify(base, null, 1)}, "भुगतान व प्रमाण पत्र सेटिंग अपडेट"); DRAFT = base; PORTAL = JSON.parse(JSON.stringify(DRAFT)); DRAFT = null; renderTrades(); fillTradeSelect(); fillRail(); initAdmin(); renderCfg(); st.textContent = "सेटिंग सफलतापूर्वक अपडेट कर दी गई हैं।"; }
   catch(e){ st.innerHTML = `<span style="color:var(--danger)">सहेजा नहीं जा सका (${esc(e?.code||"error")}).</span>`; }
 });
 
-/* trade-wise discount */
-function renderDisc(){
-  $("#discTable").innerHTML = (PORTAL.trades||[]).map((t,i) => `<div class="discrow" data-i="${i}">
-    <div class="dh"><b>${esc(t.name)}</b>${t.active===false?'<span class="pill bad">आवेदन बंद</span>':""}</div>
+/* trade-wise fee & discount management */
+let DISC_DRAFT = null;
+const RZP_WARN = "प्रशिक्षण शुल्क बदलने के कारण पुराना Razorpay Fixed Amount Link अब मान्य नहीं हो सकता। कृपया नई राशि का Razorpay Link अपडेट करें।";
+function discRowHTML(t, i){
+  const linkStale = t.payLink && t.payLinkAmount != null && Number(t.payLinkAmount) !== payable(t);
+  return `<div class="discrow" data-i="${i}">
+    <div class="dh"><b>${esc(t.name || "नया प्रशिक्षण")}</b><span class="acts">
+      <label class="toggle"><input type="checkbox" data-d="active" ${t.active!==false?"checked":""}><span data-actlbl>${t.active!==false?"आवेदन खुला":"आवेदन बंद"}</span></label>
+      <button class="btn btn-soft btn-sm" type="button" data-deltrade="${i}">हटाएँ</button></span></div>
     <div class="dg">
-      <label class="f"><span>प्रशिक्षण राशि (₹)</span><input data-d="fee" type="number" min="1" step="1" inputmode="numeric" value="${esc(t.fee)}"></label>
-      <label class="f"><span>छूट की धनराशि (₹)</span><input data-d="discount" type="number" min="0" step="1" inputmode="numeric" placeholder="0" value="${disc(t) || ""}"></label>
-      <div class="f" style="display:grid;gap:5px;font-size:.92rem;font-weight:600"><span>छूट प्रतिशत (%)</span><span class="out pct" data-pct>${pctOf(disc(t), t.fee)}</span></div>
-      <div class="f" style="display:grid;gap:5px;font-size:.92rem;font-weight:600"><span>प्रशिक्षार्थी द्वारा देय (₹)</span><span class="out" data-out>${inr(payable(t))}</span></div>
+      <label class="f"><span>प्रशिक्षण का नाम (हिन्दी)</span><input data-d="name" value="${esc(t.name)}"></label>
+      <label class="f"><span>Training Name (English)</span><input data-d="en" value="${esc(t.en)}"></label>
+      <label class="f"><span>Training Code</span><input data-d="code" class="mono" value="${esc(t.code)}"></label>
+      <label class="f"><span>अवधि</span><input data-d="duration" value="${esc(t.duration)}" placeholder="जैसे: 7 दिवस"></label>
     </div>
-    <label class="f"><span>तय राशि वाला Razorpay लिंक (वैकल्पिक)</span><input data-d="payLink" style="font-size:.92rem" placeholder="https://pages.razorpay.com/..." value="${esc(t.payLink||"")}"></label>
-  </div>`).join("");
+    <div class="dg">
+      <label class="f"><span>मूल प्रशिक्षण शुल्क ₹</span><input data-d="fee" type="number" min="1" step="1" inputmode="numeric" value="${esc(t.fee)}"></label>
+      <label class="f"><span>छूट की धनराशि ₹</span><input data-d="discount" type="number" min="0" step="1" inputmode="numeric" placeholder="0" value="${disc(t) || ""}"></label>
+      <div class="f" style="display:grid;gap:5px;font-size:.92rem;font-weight:600"><span>छूट प्रतिशत %</span><span class="out pct" data-pct>${pctOf(disc(t), t.fee)}</span></div>
+      <div class="f" style="display:grid;gap:5px;font-size:.92rem;font-weight:600"><span>प्रशिक्षार्थी द्वारा कुल देय राशि ₹</span><span class="out" data-out>${inr(payable(t))}</span></div>
+    </div>
+    <div class="grid2">
+      <label class="f"><span>बैच सूची (हर पंक्ति में एक बैच)</span><textarea data-d="batches">${esc((t.batches||[]).join("\n"))}</textarea></label>
+      <label class="f"><span>अतिरिक्त प्रश्न (हर पंक्ति में एक)</span><textarea data-d="extra">${esc((t.extra||[]).join("\n"))}</textarea></label>
+    </div>
+    <label class="f"><span>विवरण (Description)</span><input data-d="about" value="${esc(t.about||"")}"></label>
+    <label class="f"><span>Razorpay Payment Link (तय राशि वाला, वैकल्पिक)</span><input data-d="payLink" style="font-size:.92rem" placeholder="https://pages.razorpay.com/..." value="${esc(t.payLink||"")}"></label>
+    <p class="warnline" data-warn ${linkStale ? "" : "hidden"}>${RZP_WARN}</p>
+  </div>`;
+}
+function renderDisc(){
+  if (!DISC_DRAFT) DISC_DRAFT = JSON.parse(JSON.stringify(PORTAL.trades || []));
+  $("#discTable").innerHTML = DISC_DRAFT.length ? DISC_DRAFT.map(discRowHTML).join("") : '<p class="muted">कोई प्रशिक्षण नहीं है। "+ नया प्रशिक्षण जोड़ें" दबाएँ।</p>';
 }
 function pctOf(d, fee){
   d = Number(d)||0; fee = Number(fee)||0;
@@ -1175,34 +1232,78 @@ function pctOf(d, fee){
   return (Number.isInteger(p) ? p : p.toFixed(2)) + "%";
 }
 function readDiscRow(tr){
-  const g = k => tr.querySelector(`[data-d="${k}"]`).value;
-  return { fee: Math.max(0, Math.round(Number(g("fee"))||0)), discount: Math.max(0, Math.round(Number(g("discount"))||0)), discountType: "amount", payLink: g("payLink").trim() };
+  const q = k => tr.querySelector(`[data-d="${k}"]`);
+  const g = k => q(k) ? q(k).value : "";
+  const lines = k => g(k).split("\n").map(x => x.trim()).filter(Boolean);
+  return { name: g("name").trim(), en: g("en").trim(), code: g("code").trim().toUpperCase().replace(/[^A-Z0-9]/g,""), duration: g("duration").trim(),
+    fee: Math.max(0, Math.round(Number(g("fee"))||0)), discount: Math.max(0, Math.round(Number(g("discount"))||0)), discountType: "amount",
+    active: q("active") ? q("active").checked : true, batches: lines("batches"), extra: lines("extra"), about: g("about").trim(), payLink: g("payLink").trim() };
 }
-["input","change"].forEach(ev => $("#discTable").addEventListener(ev, e => {
-  const tr = e.target.closest(".discrow[data-i]"); if (!tr) return;
-  const v = readDiscRow(tr), over = v.discount >= v.fee;
+function syncDiscDraft(){
+  $$("#discTable .discrow[data-i]").forEach(tr => { const i = +tr.dataset.i; Object.assign(DISC_DRAFT[i], readDiscRow(tr)); });
+}
+function updateDiscRow(tr){
+  const i = +tr.dataset.i, v = readDiscRow(tr), over = v.fee > 0 && v.discount >= v.fee, orig = (PORTAL.trades||[]).find(x => x.id === DISC_DRAFT[i]?.id);
   tr.querySelector("[data-pct]").textContent = over ? "—" : pctOf(v.discount, v.fee);
   const out = tr.querySelector("[data-out]"); out.textContent = over ? "छूट ज़्यादा है" : inr(payable(v)); out.style.color = over ? "var(--danger)" : "";
+  tr.querySelector("[data-actlbl]").textContent = v.active ? "आवेदन खुला" : "आवेदन बंद";
+  tr.querySelector(".dh b").textContent = v.name || "नया प्रशिक्षण";
+  const prevLink = orig ? (orig.payLink || "") : "", prevAmt = orig && orig.payLinkAmount != null ? Number(orig.payLinkAmount) : (orig && orig.payLink ? payable(orig) : null);
+  const stale = !!v.payLink && v.payLink === prevLink && prevAmt != null && prevAmt !== payable(v);
+  tr.querySelector("[data-warn]").hidden = !stale;
+}
+["input","change"].forEach(ev => $("#discTable").addEventListener(ev, e => {
+  const tr = e.target.closest(".discrow[data-i]"); if (tr) updateDiscRow(tr);
 }));
+$("#btnAddTrade2").addEventListener("click", () => {
+  syncDiscDraft();
+  DISC_DRAFT.push({ id:"t" + Date.now().toString(36), name:"", en:"", code:"", fee:11000, discount:0, discountType:"amount", duration:"", active:false, batches:[], extra:[], about:"", payLink:"", payLinkAmount:null });
+  renderDisc();
+  const rows = $$("#discTable .discrow"); rows[rows.length-1]?.scrollIntoView({block:"center"}); rows[rows.length-1]?.querySelector('[data-d="name"]')?.focus();
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-deltrade]"); if (!b) return;
+  if (b.dataset.confirm !== "1"){ b.dataset.confirm = "1"; b.textContent = "पक्का हटाएँ?"; b.className = "btn btn-sm"; b.style.background = "var(--danger)"; b.style.color = "#fff"; setTimeout(() => { if (b.isConnected){ b.dataset.confirm = ""; b.textContent = "हटाएँ"; b.className = "btn btn-soft btn-sm"; b.style.background = ""; b.style.color = ""; } }, 4000); return; }
+  syncDiscDraft(); DISC_DRAFT.splice(+b.dataset.deltrade, 1); renderDisc();
+  $("#discStatus").textContent = "प्रशिक्षण सूची से हटाया गया। स्थायी करने के लिए \"Save Changes / सेटिंग सहेजें\" दबाएँ।";
+});
+async function freshPortal(){
+  if (!artifactNS && SESSION){ try { const r = await ghGet("data/portal.json"); if (r) return JSON.parse(r.text); } catch(e){} }
+  return JSON.parse(JSON.stringify(PORTAL));
+}
 $("#btnSaveDisc").addEventListener("click", async () => {
-  const st = $("#discStatus"), next = JSON.parse(JSON.stringify(PORTAL)), cleared = [];
-  for (const tr of $$("#discTable .discrow[data-i]")){
-    const t = next.trades[+tr.dataset.i], v = readDiscRow(tr);
-    if (v.fee <= 0){ st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}" की प्रशिक्षण राशि भरें।</span>`; return; }
-    if (v.discount >= v.fee){ st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}" की छूट प्रशिक्षण राशि से कम होनी चाहिए।</span>`; return; }
-    if (v.payLink && !/^https:\/\//.test(v.payLink)){ st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}" का Razorpay लिंक https:// से शुरू होना चाहिए।</span>`; return; }
-    const oldPay = payable(t), newPay = payable(v);
-    if (v.payLink && v.payLink === (t.payLink||"") && oldPay !== newPay){ v.payLink = ""; cleared.push(t.name); }
-    v.payLinkAmount = v.payLink ? newPay : null;
-    Object.assign(t, v);
+  const st = $("#discStatus"), cleared = [];
+  syncDiscDraft();
+  const codes = new Set();
+  for (const v of DISC_DRAFT){
+    const nm = v.name || "नया प्रशिक्षण";
+    if (!v.name){ st.innerHTML = `<span style="color:var(--danger)">हर प्रशिक्षण का हिन्दी नाम भरें।</span>`; return; }
+    if (!v.code){ st.innerHTML = `<span style="color:var(--danger)">"${esc(nm)}" का Training Code भरें।</span>`; return; }
+    if (codes.has(v.code)){ st.innerHTML = `<span style="color:var(--danger)">Training Code "${esc(v.code)}" दो बार है। हर प्रशिक्षण का कोड अलग रखें।</span>`; return; }
+    codes.add(v.code);
+    if (v.fee <= 0){ st.innerHTML = `<span style="color:var(--danger)">"${esc(nm)}" का मूल प्रशिक्षण शुल्क भरें।</span>`; return; }
+    if (v.discount >= v.fee){ st.innerHTML = `<span style="color:var(--danger)">"${esc(nm)}" की छूट प्रशिक्षण शुल्क से कम होनी चाहिए।</span>`; return; }
+    if (v.payLink && !/^https:\/\//.test(v.payLink)){ st.innerHTML = `<span style="color:var(--danger)">"${esc(nm)}" का Razorpay लिंक https:// से शुरू होना चाहिए।</span>`; return; }
   }
-  st.textContent = "सहेजा जा रहा है…";
+  if (!canPersist()){ st.innerHTML = '<span style="color:var(--danger)">सहेजने के लिए Admin Login आवश्यक है।</span>'; return; }
+  $("#btnSaveDisc").disabled = true; st.textContent = "सहेजा जा रहा है…";
   try {
-    if (!artifactNS) throw {code:"unavailable"};
-    await artifactNS.publish({"data/portal.json": JSON.stringify(next, null, 1)});
-    PORTAL = next; DRAFT = null; renderTrades(); fillTradeSelect(); fillRail(); renderDisc();
-    st.innerHTML = "छूट सहेज ली गई। प्रशिक्षार्थियों को अब नई कुल देय राशि दिखेगी।" + (cleared.length ? `<br><span style="color:var(--danger)">राशि बदलने से इन ट्रेड का पुराना Razorpay लिंक हटा दिया गया: ${esc(cleared.join(", "))}. नई राशि का लिंक Razorpay में बनाकर यहाँ डालें.</span>` : "");
-  } catch(e){ st.innerHTML = `<span style="color:var(--danger)">सहेजा नहीं जा सका (${esc(e?.code||"error")}).</span>`; }
+    const base = await freshPortal();
+    const nextTrades = DISC_DRAFT.map(v => {
+      const orig = (base.trades||[]).find(x => x.id === v.id) || (PORTAL.trades||[]).find(x => x.id === v.id) || {};
+      const t = { ...orig, ...v };
+      const prevLink = orig.payLink || "", prevAmt = orig.payLinkAmount != null ? Number(orig.payLinkAmount) : (prevLink ? payable(orig) : null);
+      if (t.payLink && t.payLink === prevLink && prevAmt != null && prevAmt !== payable(t)){ t.payLink = ""; cleared.push(t.name); }
+      t.payLinkAmount = t.payLink ? payable(t) : null;
+      return t;
+    });
+    const next = { ...base, trades: nextTrades };
+    await persist({"data/portal.json": JSON.stringify(next, null, 1)}, "प्रशिक्षण शुल्क एवं छूट अपडेट");
+    PORTAL = next; DRAFT = null; DISC_DRAFT = null;
+    renderTrades(); fillTradeSelect(); fillRail(); initAdmin(); renderDisc();
+    st.innerHTML = "शुल्क एवं प्रशिक्षण सेटिंग सफलतापूर्वक अपडेट कर दी गई हैं।" + (cleared.length ? `<br><span style="color:var(--danger)">${RZP_WARN} (${esc(cleared.join(", "))})</span>` : "") + (artifactNS ? "" : '<br><span class="muted">सार्वजनिक पोर्टल पर बदलाव 1–2 मिनट में दिखने लगेंगे।</span>');
+  } catch(e){ st.innerHTML = `<span style="color:var(--danger)">सहेजा नहीं जा सका: ${esc(e?.message || e?.code || "error")}</span>`; }
+  $("#btnSaveDisc").disabled = false;
 });
 
 /* rail trade picker */
@@ -1228,16 +1329,25 @@ $("#railGo").addEventListener("click", () => {
 
 /* ---------- applications register (db, admin-only) ---------- */
 const docId = s => String(s||"").replace(/[^A-Za-z0-9_\-.~:@+]/g, "-").slice(0,180) || ("a" + Date.now());
-async function saveApp(a){
-  if (!dbNS) throw {code:"unavailable"};
-  const rec = { appNo:a.appNo||"", rcptNo:a.rcptNo||"", name:a.name||"", father:a.father||"", dob:a.dob||"", gender:a.gender||"",
+function appRecord(a){
+  return { appNo:a.appNo||"", rcptNo:a.rcptNo||"", name:a.name||"", father:a.father||"", dob:a.dob||"", gender:a.gender||"",
     mobile:a.mobile||"", email:a.email||"", cat:a.cat||"", edu:a.edu||"", address:a.address || [a.village,a.block,a.district,a.pin].filter(Boolean).join(", "),
     tradeId:a.tradeId||"", trade:a.trade||"", batch:a.batch||"", duration:a.duration||"", fee:Number(a.fee)||0, discount:Number(a.discount)||0,
     amount:Number(a.amount)||0, payId:a.payId||"", payDate:a.payDate||"", extra:(a.extra||[]).map(([q,v]) => q + ": " + v).join("; "),
     appDate: a.appDate || a.payDate || "", verified: !!a.verified, addedAt: new Date().toISOString() };
-  await dbNS.collection("applications").doc(docId(rec.appNo || rec.payId)).set(rec);
 }
+async function saveApps(list){
+  const recs = list.map(appRecord);
+  if (dbNS){ for (const rec of recs) await dbNS.collection("applications").doc(docId(rec.appNo || rec.payId)).set(rec); return recs.length; }
+  if (!SESSION) throw {code:"not_logged_in", message:"Admin Login आवश्यक है"};
+  const cur = await ghLoadApps();
+  recs.forEach(rec => { const id = docId(rec.appNo || rec.payId), i = cur.findIndex(x => x._id === id); const prev = i >= 0 ? cur[i] : null; const row = { ...rec, _id:id, verified: prev ? !!prev.verified || rec.verified : rec.verified }; if (i >= 0) cur[i] = row; else cur.push(row); });
+  await ghSaveApps(cur, `आवेदन रजिस्टर: ${recs.length} जोड़े/अपडेट`);
+  return recs.length;
+}
+async function saveApp(a){ return saveApps([a]); }
 function startApps(){
+  if (!window.claude?.use){ ghLoadApps().then(list => { APPS = list; if (!$("#sub-apps").hidden) renderApps(); }).catch(e => { $("#appTable").innerHTML = `<p class="note err">आवेदन रजिस्टर लोड नहीं हो सका: ${esc(e?.message||"error")}</p>`; }); return; }
   claude.use("db").then(d => {
     dbNS = d;
     if (!d){ $("#appTable").innerHTML = '<p class="note warn">इस दृश्य में आवेदन रजिस्टर उपलब्ध नहीं है।</p>'; return; }
@@ -1281,7 +1391,7 @@ $("#btnParse").addEventListener("click", () => {
     </tbody></table></div><div class="row"><button class="btn btn-accent" type="button" id="btnAddApps">रजिस्टर में जोड़ें</button></div>`;
   $("#btnAddApps").onclick = async () => {
     $("#btnAddApps").disabled = true; let ok = 0;
-    for (const r of PARSED){ try { await saveApp(r); ok++; } catch(e){ st.innerHTML = `<span style="color:var(--danger)">${ok} जुड़े, फिर रुकावट आई (${esc(e?.code||"error")}).</span>`; return; } }
+    try { ok = await saveApps(PARSED); } catch(e){ st.innerHTML = `<span style="color:var(--danger)">रजिस्टर में नहीं जुड़ सके: ${esc(e?.message||e?.code||"error")}</span>`; $("#btnAddApps").disabled = false; return; }
     st.textContent = `${ok} आवेदन रजिस्टर में जुड़ गए।`; $("#waPaste").value = ""; $("#parsePreview").innerHTML = ""; PARSED = [];
   };
 });
@@ -1349,9 +1459,12 @@ function renderAppTable(){
     </tbody></table></div><p class="muted" style="font-size:.88rem">Razorpay डैशबोर्ड से भुगतान मिलान के बाद "सत्यापित" पर टिक करें।</p>` : '<p class="muted">अभी कोई आवेदन रजिस्टर में नहीं है। ऊपर WhatsApp संदेश चिपकाकर पहला आवेदन जोड़ें।</p>';
 }
 document.addEventListener("change", async e => {
-  const id = e.target.dataset?.ver; if (!id || !dbNS) return;
+  const id = e.target.dataset?.ver; if (!id || !(dbNS || SESSION)) return;
   e.target.disabled = true;
-  try { await dbNS.collection("applications").doc(id).update({ verified: e.target.checked }); }
+  try {
+    if (dbNS) await dbNS.collection("applications").doc(id).update({ verified: e.target.checked });
+    else { const cur = await ghLoadApps(); const r = cur.find(x => x._id === id); if (!r) throw new Error("not found"); r.verified = e.target.checked; await ghSaveApps(cur, "भुगतान सत्यापन अपडेट"); }
+  }
   catch(err){ e.target.checked = !e.target.checked; }
   e.target.disabled = false;
 });
@@ -1384,9 +1497,175 @@ $("#btnXlsx").addEventListener("click", async () => {
   await saveFile(`YKVM-रिपोर्ट-${tag}-${today()}.xlsx`, new Blob([buf]), st);
 });
 
+/* ---------- GitHub-backed secure admin (for the public GitHub Pages site) ---------- */
+const GH = { owner:"manojk38904-gif", repo:"ykvm-training-portal", branch:"main", api:"https://api.github.com" };
+const IDLE_MS = 30 * 60 * 1000, KDF_ITER = 600000, ADMIN_FILE = "data/admin.enc.json", APPS_FILE = "data/applications.enc.json";
+let SESSION = null, FAILS = 0, LOCK_UNTIL = 0;
+const b64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const utf8b64 = str => { const bytes = new TextEncoder().encode(str); let bin = ""; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000)); return btoa(bin); };
+const b64utf8 = s => new TextDecoder().decode(unb64(s.replace(/\s/g, "")));
+async function kdf(password, salt, iter){
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+  return crypto.subtle.deriveKey({ name:"PBKDF2", hash:"SHA-256", salt, iterations: iter }, base, { name:"AES-GCM", length:256 }, false, ["encrypt","decrypt"]);
+}
+async function aesEnc(key, text){ const iv = crypto.getRandomValues(new Uint8Array(12)); const ct = await crypto.subtle.encrypt({ name:"AES-GCM", iv }, key, new TextEncoder().encode(text)); return { iv: b64(iv), ct: b64(ct) }; }
+async function aesDec(key, o){ const pt = await crypto.subtle.decrypt({ name:"AES-GCM", iv: unb64(o.iv) }, key, unb64(o.ct)); return new TextDecoder().decode(pt); }
+const rawKey = async b => crypto.subtle.importKey("raw", unb64(b), "AES-GCM", false, ["encrypt","decrypt"]);
+async function gh(path, opts = {}, token){
+  const tok = token || SESSION?.token;
+  const r = await fetch(GH.api + path, { ...opts, headers: { "Accept":"application/vnd.github+json", "X-GitHub-Api-Version":"2022-11-28", ...(tok ? { "Authorization":"Bearer " + tok } : {}), ...(opts.headers||{}) } });
+  if (r.status === 401){ if (!token) logout("GitHub टोकन अमान्य या समाप्त हो गया है। दोबारा लॉगिन करें।"); throw Object.assign(new Error("GitHub टोकन अमान्य है"), { code:"unauthorized", status:401 }); }
+  return r;
+}
+async function ghGet(path, token){
+  const r = await gh(`/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}&t=${Date.now()}`, {}, token);
+  if (r.status === 404) return null;
+  if (!r.ok) throw Object.assign(new Error(`GitHub से पढ़ा नहीं जा सका (${r.status})`), { status:r.status });
+  const j = await r.json();
+  let text = j.content && j.encoding === "base64" ? b64utf8(j.content) : null;
+  if (text == null){ const rr = await gh(`/repos/${GH.owner}/${GH.repo}/contents/${path}?ref=${GH.branch}`, { headers:{ "Accept":"application/vnd.github.raw" } }, token); text = await rr.text(); }
+  return { sha: j.sha, text };
+}
+async function ghPut(path, text, message, token){
+  for (let attempt = 0; attempt < 2; attempt++){
+    const cur = await ghGet(path, token);
+    const r = await gh(`/repos/${GH.owner}/${GH.repo}/contents/${path}`, { method:"PUT", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ message: message || ("अपडेट: " + path), content: utf8b64(text), branch: GH.branch, ...(cur ? { sha: cur.sha } : {}) }) }, token);
+    if (r.ok) return true;
+    if ((r.status === 409 || r.status === 422) && attempt === 0) continue;
+    if (r.status === 403 || r.status === 404) throw Object.assign(new Error("इस GitHub टोकन को repository में लिखने की अनुमति नहीं है"), { status:r.status });
+    throw Object.assign(new Error(`GitHub में सहेजा नहीं जा सका (${r.status})`), { status:r.status });
+  }
+}
+function canPersist(){ return !!artifactNS || !!SESSION; }
+async function persist(files, message){
+  if (artifactNS) return artifactNS.publish(files);
+  if (!SESSION) throw Object.assign(new Error("Admin Login आवश्यक है"), { code:"not_logged_in" });
+  touch();
+  for (const [path, text] of Object.entries(files)) await ghPut(path, text, message);
+}
+async function ghLoadApps(){
+  if (!SESSION) return [];
+  const r = await ghGet(APPS_FILE);
+  if (!r) return [];
+  const list = JSON.parse(await aesDec(await rawKey(SESSION.dek), JSON.parse(r.text)));
+  return list.sort((p,q) => String(q.payDate||q.addedAt).localeCompare(String(p.payDate||p.addedAt)));
+}
+async function ghSaveApps(list, message){
+  const enc = await aesEnc(await rawKey(SESSION.dek), JSON.stringify(list));
+  await ghPut(APPS_FILE, JSON.stringify({ v:1, alg:"AES-GCM", ...enc }), message || "आवेदन रजिस्टर अपडेट");
+  APPS = list.slice().sort((p,q) => String(q.payDate||q.addedAt).localeCompare(String(p.payDate||p.addedAt)));
+  if (!$("#sub-apps").hidden) renderApps();
+}
+async function verifyToken(token){
+  const r = await gh(`/repos/${GH.owner}/${GH.repo}`, {}, token);
+  if (!r.ok) return false;
+  const j = await r.json();
+  return !!(j.permissions && (j.permissions.push || j.permissions.admin || j.permissions.maintain));
+}
+function saveSession(){ try { sessionStorage.setItem("ykvm_admin", JSON.stringify(SESSION)); } catch(e){} }
+function touch(){ if (!SESSION) return; const now = Date.now(); if (now - (SESSION.last||0) > 15000){ SESSION.last = now; saveSession(); } }
+function checkIdle(){ if (SESSION && Date.now() - (SESSION.last||0) > IDLE_MS){ logout("निष्क्रियता के कारण सत्र समाप्त हो गया। दोबारा लॉगिन करें।"); return false; } return !!SESSION; }
+["click","keydown","touchstart","input"].forEach(ev => document.addEventListener(ev, () => { if (SESSION && checkIdle()) touch(); }, true));
+document.addEventListener("visibilitychange", () => { if (!document.hidden) checkIdle(); });
+setInterval(checkIdle, 20000);
+function enterAdmin(){
+  isEditor = true;
+  $("#adminBar").hidden = false; $("#btnAdminLogin").hidden = true;
+  $("#adminWho").textContent = "Admin सत्र सक्रिय · 30 मिनट निष्क्रिय रहने पर अपने-आप लॉगआउट";
+  $("#pwPanel").hidden = false;
+  initAdmin(); DISC_DRAFT = null; sub("disc"); startApps();
+}
+function logout(msg){
+  SESSION = null; isEditor = false; APPS = []; DISC_DRAFT = null; DRAFT = null;
+  try { sessionStorage.removeItem("ykvm_admin"); } catch(e){}
+  $("#t-admin").hidden = true; $("#adminBar").hidden = true; $("#pwPanel").hidden = true;
+  if (!window.claude?.use) $("#btnAdminLogin").hidden = false;
+  $("#appTable").innerHTML = ""; $("#discTable").innerHTML = "";
+  if (!$("#v-admin").hidden) show("profile");
+  if (msg){ openLogin(); $("#lg_err").textContent = msg; $("#lg_err").hidden = false; }
+}
+async function openLogin(){
+  if (window.claude?.use) return;
+  const m = $("#loginModal"); m.hidden = false;
+  $("#loginWait").hidden = false; $("#loginForm").hidden = true; $("#setupForm").hidden = true; $("#lg_err").hidden = true; $("#su_err").hidden = true;
+  let exists = true;
+  try { const r = await fetch(ADMIN_FILE + "?t=" + Date.now(), { cache:"no-store" }); exists = r.ok; } catch(e){ exists = true; }
+  $("#loginWait").hidden = true;
+  if (exists){ $("#loginTitle").textContent = "Admin Login / प्रबंधन"; $("#loginForm").hidden = false; setTimeout(() => $("#lg_pw").focus(), 30); }
+  else { $("#loginTitle").textContent = "Admin सेटअप (पहली बार)"; $("#setupForm").hidden = false; setTimeout(() => $("#su_tok").focus(), 30); }
+}
+function closeLogin(){ $("#loginModal").hidden = true; $("#lg_pw").value = ""; $("#su_tok").value = ""; $("#su_pw1").value = ""; $("#su_pw2").value = ""; }
+$("#btnLoginClose").addEventListener("click", closeLogin);
+$("#loginModal").addEventListener("click", e => { if (e.target.id === "loginModal") closeLogin(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#loginModal").hidden) closeLogin(); });
+$("#btnAdminLogin").addEventListener("click", openLogin);
+$("#btnLogout").addEventListener("click", () => logout());
+$("#loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = $("#lg_err"), btn = $("#lg_btn"), pw = $("#lg_pw").value;
+  err.hidden = true;
+  if (Date.now() < LOCK_UNTIL){ err.textContent = `बहुत बार गलत पासवर्ड। ${Math.ceil((LOCK_UNTIL - Date.now())/60000)} मिनट बाद प्रयास करें।`; err.hidden = false; return; }
+  if (!pw){ err.textContent = "पासवर्ड भरें।"; err.hidden = false; return; }
+  btn.disabled = true; btn.textContent = "जाँच हो रही है…";
+  try {
+    const r = await fetch(ADMIN_FILE + "?t=" + Date.now(), { cache:"no-store" });
+    if (!r.ok) throw new Error("setup");
+    const f = await r.json();
+    let secret;
+    try { secret = JSON.parse(await aesDec(await kdf(pw, unb64(f.salt), f.iter || KDF_ITER), f)); }
+    catch(x){ FAILS++; if (FAILS >= 5){ LOCK_UNTIL = Date.now() + 5*60000; FAILS = 0; } throw new Error("पासवर्ड गलत है।"); }
+    if (!(await verifyToken(secret.token))) throw new Error("सहेजा हुआ GitHub टोकन अब मान्य नहीं है (समाप्त या अनुमति हटाई गई)। नया टोकन बनाकर data/admin.enc.json हटाएँ और दोबारा सेटअप करें।");
+    FAILS = 0;
+    SESSION = { token: secret.token, dek: secret.dek, last: Date.now() }; saveSession();
+    closeLogin(); enterAdmin(); show("admin");
+  } catch(x){ err.textContent = x.message === "setup" ? "Admin सेटअप नहीं मिला। पेज रिफ्रेश करें।" : (x.message || "लॉगिन नहीं हो सका।"); err.hidden = false; }
+  btn.disabled = false; btn.textContent = "लॉगिन करें";
+});
+async function writeAdminFile(token, password, dek){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const enc = await aesEnc(await kdf(password, salt, KDF_ITER), JSON.stringify({ token, dek }));
+  await ghPut(ADMIN_FILE, JSON.stringify({ v:1, kdf:"PBKDF2-SHA256", iter:KDF_ITER, salt: b64(salt), alg:"AES-GCM", ...enc }, null, 1), "Admin लॉगिन सेटिंग अपडेट", token);
+}
+$("#setupForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = $("#su_err"), btn = $("#su_btn"), tok = $("#su_tok").value.trim(), p1 = $("#su_pw1").value, p2 = $("#su_pw2").value;
+  err.hidden = true;
+  const fail = m => { err.textContent = m; err.hidden = false; };
+  if (!tok) return fail("GitHub token भरें।");
+  if (p1.length < 10) return fail("पासवर्ड कम से कम 10 अक्षर का रखें।");
+  if (p1 !== p2) return fail("दोनों पासवर्ड एक जैसे नहीं हैं।");
+  btn.disabled = true; btn.textContent = "सेटअप हो रहा है…";
+  try {
+    if (!(await verifyToken(tok))) throw new Error("इस टोकन को ykvm-training-portal में लिखने की अनुमति नहीं है। Contents: Read and write वाला टोकन बनाएँ।");
+    const existing = await ghGet(ADMIN_FILE, tok);
+    if (existing) throw new Error("Admin पहले से सेटअप है। पेज रिफ्रेश करके पासवर्ड से लॉगिन करें।");
+    const dek = b64(crypto.getRandomValues(new Uint8Array(32)));
+    await writeAdminFile(tok, p1, dek);
+    SESSION = { token: tok, dek, last: Date.now() }; saveSession();
+    closeLogin(); enterAdmin(); show("admin");
+  } catch(x){ fail(x.message || "सेटअप नहीं हो सका।"); }
+  btn.disabled = false; btn.textContent = "सेटअप पूरा करें";
+});
+$("#btnChangePw").addEventListener("click", async () => {
+  const st = $("#pwStatus"), p1 = $("#np1").value, p2 = $("#np2").value;
+  if (!SESSION){ st.textContent = "पहले लॉगिन करें।"; return; }
+  if (p1.length < 10){ st.innerHTML = '<span style="color:var(--danger)">पासवर्ड कम से कम 10 अक्षर का रखें।</span>'; return; }
+  if (p1 !== p2){ st.innerHTML = '<span style="color:var(--danger)">दोनों पासवर्ड एक जैसे नहीं हैं।</span>'; return; }
+  st.textContent = "बदला जा रहा है…";
+  try { await writeAdminFile(SESSION.token, p1, SESSION.dek); $("#np1").value = ""; $("#np2").value = ""; st.textContent = "पासवर्ड बदल दिया गया। अगली बार नए पासवर्ड से लॉगिन करें।"; }
+  catch(x){ st.innerHTML = `<span style="color:var(--danger)">${esc(x.message || "नहीं बदला जा सका")}</span>`; }
+});
+
 /* ---------- boot ---------- */
 load().then(async () => {
-  if (!window.claude?.use || !PORTAL) return;
+  if (!PORTAL) return;
+  if (!window.claude?.use){
+    $("#btnAdminLogin").hidden = false;
+    try { const s0 = JSON.parse(sessionStorage.getItem("ykvm_admin") || "null"); if (s0 && s0.token && s0.dek){ SESSION = s0; if (checkIdle()) enterAdmin(); } } catch(e){}
+    return;
+  }
   claude.use("downloads").then(d => { downloadsNS = d; }).catch(() => {});
   try {
     const user = await claude.use("user");
