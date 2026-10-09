@@ -680,7 +680,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610100110";
+const BUILD = "202610100120";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
@@ -1121,9 +1121,10 @@ async function drawCertificate(cert){
   if (logo){ const lh = 190, lw = lh * logo.width / logo.height; x.drawImage(logo, sx0 - lw/2, sy0 - lh/2, lw, lh); }
   // single signature
   x.textAlign = "center"; const sgx = 1960;
-  const sign = await loadImg("img/sign.png");
-  if (sign){ const sw = 330, sh = sw * sign.height / sign.width; x.drawImage(sign, sgx - sw/2, fy + 132 - sh + 10, sw, sh); }
   x.strokeStyle = navy; x.lineWidth = 2; x.beginPath(); x.moveTo(sgx-220, fy+135); x.lineTo(sgx+220, fy+135); x.stroke();
+  // green-ink pen signature, signed across the line
+  const sign = await loadImg("img/sign-green.png") || await loadImg("img/sign.png");
+  if (sign){ const sw = 420, sh = sw * sign.height / sign.width; x.drawImage(sign, sgx - sw/2 + 10, fy + 150 - sh, sw, sh); }
   x.fillStyle = navy; x.font = '700 36px "Mukta"'; x.fillText(S.certSignName || "मनोज कुमार", sgx, fy+182);
   x.fillStyle = muted; x.font = '500 29px "Mukta"'; x.fillText(S.certSignTitle || "निदेशक / मुख्य कार्यकारी अधिकारी", sgx, fy+222);
   x.textAlign = "left"; return c;
