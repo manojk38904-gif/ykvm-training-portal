@@ -453,7 +453,14 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
           </div>
         </div>
         <div class="panel">
-          <h3>2. प्रशिक्षार्थियों की Excel शीट</h3>
+          <h3>2. प्रशिक्षार्थियों की सूची</h3>
+          <div class="note" style="display:grid;gap:10px">
+            <b>तरीका 1: भरे गए आवेदनों से अपने-आप</b>
+            <span style="font-size:.9rem">ऊपर चुने गए ट्रेड और बैच के जिन प्रशिक्षार्थियों के आवेदन "आवेदन रजिस्टर" में दर्ज हैं, उनके नाम, पिता/पति का नाम, पता और आवेदन संख्या अपने-आप भर जाएँगे। फिर जिन्होंने प्रशिक्षण पूरा किया, केवल उन पर टिक रहने दें।</span>
+            <label class="check" style="font-size:.9rem"><input type="checkbox" id="g_onlyVer"><span>केवल वे आवेदन जिनका भुगतान "सत्यापित" है</span></label>
+            <div class="row"><button class="btn btn-accent btn-sm" type="button" id="btnFromApps">आवेदन रजिस्टर से सूची भरें</button><button class="btn btn-soft btn-sm" type="button" id="btnListXlsx" hidden>इस सूची की Excel सहेजें</button></div>
+          </div>
+          <b style="margin-top:6px">तरीका 2: Excel शीट से</b>
           <p class="muted" style="font-size:.93rem">कॉलम: <b>पंजीकरण संख्या</b> (ऑनलाइन आवेदक की आवेदन संख्या डालें, ताकि रिपोर्ट में आवेदन से मिलान हो), <b>नाम</b>, <b>पिता/पति का नाम</b>, <b>ग्राम/पता</b>, ग्रेड (वैकल्पिक), मोबाइल (वैकल्पिक, प्रमाण पत्र पर नहीं छपता)। पहली पंक्ति में शीर्षक हों।</p>
           <div class="row">
             <button class="btn btn-soft btn-sm" type="button" id="btnTemplate">नमूना Excel शीट सहेजें</button>
@@ -1066,16 +1073,43 @@ function rowProblem(r){
   return "";
 }
 function renderPreview(){
-  const bad = ROWS.filter(rowProblem).length;
-  $("#g_preview").innerHTML = `<p class="muted" style="font-size:.93rem">${ROWS.length} प्रशिक्षार्थी मिले${bad ? `, जिनमें ${bad} में समस्या है (वे छोड़ दिए जाएँगे)` : ""}।</p>
-  <div class="tablewrap" style="max-height:360px"><table><thead><tr><th>#</th><th>पंजीकरण सं.</th><th>नाम</th><th>पिता/पति</th><th>ग्राम</th><th>ग्रेड</th><th>स्थिति</th></tr></thead><tbody>
-  ${ROWS.map((r,i) => { const p = rowProblem(r); return `<tr><td class="mono">${i+1}</td><td class="mono">${esc(r.reg)}</td><td>${esc(r.name)}</td><td>${esc(r.father)}</td><td>${esc(r.village)}</td><td>${esc(r.grade)}</td><td>${p ? `<span class="pill bad">${esc(p)}</span>` : '<span class="pill ok">ठीक</span>'}</td></tr>`; }).join("")}
+  const bad = ROWS.filter(r => r.skip || rowProblem(r)).length;
+  const skipped = ROWS.filter(r => r.skip).length;
+  $("#btnListXlsx").hidden = !ROWS.length;
+  $("#g_preview").innerHTML = `<p class="muted" style="font-size:.93rem">${ROWS.length} प्रशिक्षार्थी मिले${skipped ? `, ${skipped} का टिक हटाया गया` : ""}${bad - skipped ? `, ${bad - skipped} में समस्या है (वे छोड़ दिए जाएँगे)` : ""}। <b>${ROWS.length - bad}</b> के प्रमाण पत्र बनेंगे।</p>
+  <div class="tablewrap" style="max-height:360px"><table><thead><tr><th>प्रशिक्षण पूर्ण</th><th>#</th><th>पंजीकरण सं.</th><th>नाम</th><th>पिता/पति</th><th>ग्राम</th><th>ग्रेड</th><th>स्थिति</th></tr></thead><tbody>
+  ${ROWS.map((r,i) => { const p = rowProblem(r); return `<tr><td><input type="checkbox" data-inc="${i}" ${r.skip ? "" : "checked"} aria-label="प्रमाण पत्र बनाएँ"></td><td class="mono">${i+1}</td><td class="mono">${esc(r.reg)}</td><td>${esc(r.name)}</td><td>${esc(r.father)}</td><td>${esc(r.village)}</td><td>${esc(r.grade)}</td><td>${r.skip ? '<span class="pill">छोड़ा</span>' : p ? `<span class="pill bad">${esc(p)}</span>` : '<span class="pill ok">ठीक</span>'}</td></tr>`; }).join("")}
   </tbody></table></div>`;
   $("#btnIssue").disabled = ROWS.length - bad === 0;
   $("#issueHint").hidden = ROWS.length - bad > 0;
   if (ROWS.length - bad === 0) $("#issueHint").textContent = ROWS.length ? "शीट की किसी भी पंक्ति में सही विवरण नहीं है (ऊपर तालिका में कारण देखें)। ठीक करके दोबारा चुनें।" : "शीट में कोई प्रशिक्षार्थी नहीं मिला। पहली पंक्ति में शीर्षक और नीचे नाम भरें।";
 }
 $("#g_trade").addEventListener("change", () => { if (ROWS.length) renderPreview(); });
+document.addEventListener("change", e => { const i = e.target.dataset?.inc; if (i === undefined || !ROWS[+i]) return; ROWS[+i].skip = !e.target.checked; renderPreview(); });
+$("#btnFromApps").addEventListener("click", async () => {
+  const st = $("#g_status"), t = tradeById($("#g_trade").value), bn = $("#g_batch").value.trim(), onlyVer = $("#g_onlyVer").checked;
+  if (!t){ st.innerHTML = '<span style="color:var(--danger)">ऊपर ट्रेड चुनें।</span>'; return; }
+  if (!(dbNS || SESSION)){ st.innerHTML = '<span style="color:var(--danger)">आवेदन रजिस्टर उपलब्ध नहीं है। Admin Login करें।</span>'; return; }
+  if (!dbNS && SESSION){ try { st.textContent = "आवेदन रजिस्टर लोड हो रहा है…"; APPS = await ghLoadApps(); } catch(e){ st.innerHTML = `<span style="color:var(--danger)">आवेदन रजिस्टर लोड नहीं हो सका: ${esc(e?.message||"error")}</span>`; return; } }
+  const same = (a, b) => norm(a) === norm(b);
+  const list = APPS.filter(a => (a.tradeId === t.id || same(a.trade, t.name)) && (!bn || same(a.batch, bn)) && (!onlyVer || a.verified));
+  if (!list.length){
+    const anyTrade = APPS.filter(a => a.tradeId === t.id || same(a.trade, t.name)).length;
+    st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}"${bn ? ` के बैच "${esc(bn)}"` : ""} का कोई आवेदन रजिस्टर में नहीं मिला${onlyVer ? " (सत्यापित)" : ""}।</span>` + (anyTrade && bn ? ` इस ट्रेड के कुल ${anyTrade} आवेदन हैं; बैच का नाम खाली करके या सही बैच चुनकर दोबारा प्रयास करें।` : ` आवेदन "रिपोर्ट, रजिस्टर व Excel" में WhatsApp संदेश चिपकाकर जोड़े जाते हैं।`);
+    return;
+  }
+  ROWS = list.map(a => ({ reg: a.appNo || "", name: a.name || "", father: a.father || "", village: a.address || "", grade: "", batchOf: a.batch || "" }));
+  $("#g_fname").textContent = `आवेदन रजिस्टर से ${ROWS.length} प्रशिक्षार्थी`; $("#g_file").value = "";
+  st.textContent = "सूची भर दी गई। जिन्होंने प्रशिक्षण पूरा नहीं किया, उनका टिक हटा दें।";
+  if (!bn){ const bs = [...new Set(list.map(a => a.batch).filter(Boolean))]; if (bs.length === 1) $("#g_batch").value = bs[0]; else if (bs.length > 1) st.textContent += ` ध्यान दें: सूची में ${bs.length} अलग बैच हैं; एक बार में एक बैच जारी करना बेहतर है।`; }
+  renderPreview();
+});
+$("#btnListXlsx").addEventListener("click", async () => {
+  const ws = XLSX.utils.aoa_to_sheet([["पंजीकरण संख्या","नाम","पिता/पति का नाम","ग्राम/पता","ग्रेड"]].concat(ROWS.filter(r => !r.skip).map(r => [r.reg, r.name, r.father, r.village, r.grade||""])));
+  ws["!cols"] = [{wch:26},{wch:24},{wch:24},{wch:30},{wch:8}];
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Trainees");
+  await saveFile(`YKVM-प्रशिक्षार्थी-सूची-${today()}.xlsx`, new Blob([XLSX.write(wb, {type:"array", bookType:"xlsx"})]), $("#g_status"));
+});
 
 let LAST_BATCH = null;
 $("#btnIssue").addEventListener("click", async () => {
@@ -1083,7 +1117,7 @@ $("#btnIssue").addEventListener("click", async () => {
   const meta = { batch:$("#g_batch").value.trim(), duration:$("#g_duration").value.trim(), start:$("#g_start").value, end:$("#g_end").value, issue:$("#g_issue").value };
   if (!t || !meta.batch || !meta.duration || !meta.start || !meta.end || !meta.issue){ st.innerHTML = '<span style="color:var(--danger)">ट्रेड, बैच, अवधि और तीनों तिथियाँ भरें।</span>'; return; }
   if (meta.end < meta.start){ st.innerHTML = '<span style="color:var(--danger)">समापन तिथि प्रारम्भ तिथि से पहले नहीं हो सकती।</span>'; return; }
-  const good = ROWS.filter(r => !rowProblem(r)); if (!good.length) return;
+  const good = ROWS.filter(r => !r.skip && !rowProblem(r)).map(({skip, ...r}) => r); if (!good.length) return;
   $("#btnIssue").disabled = true; st.textContent = "सीरियल नंबर बन रहे हैं…";
   const year = meta.issue.slice(0,4), prefix = `YKVM/${t.code}/${year}/`;
   let next = REG.certificates.filter(c => c.serial.startsWith(prefix)).reduce((m,c) => Math.max(m, parseInt(c.serial.split("/").pop(),10)||0), 0);
