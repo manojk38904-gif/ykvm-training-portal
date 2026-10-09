@@ -117,7 +117,7 @@ body.gated{overflow:hidden}
 .pw .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);appearance:none;border:0;background:transparent;color:var(--muted);width:34px;height:34px;border-radius:8px;cursor:pointer;display:grid;place-items:center}
 .pw .eye:hover{background:var(--sunk);color:var(--ink)}
 .pw .eye svg{width:20px;height:20px}
-.batchchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.batchchips button{appearance:none;border:1px solid var(--line);background:var(--sunk);color:var(--ink);border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer}.batchchips button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.batchchips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.batchchips button{appearance:none;border:1px solid var(--line);background:var(--sunk);color:var(--ink);border-radius:999px;padding:4px 10px;font:inherit;font-size:.82rem;cursor:pointer}.batchchips button.past{border-style:dashed;background:transparent}.batchchips button.on{background:var(--teal);color:#fff;border-color:var(--teal)}
 .railbox{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;font-size:.92rem}
 .railbox .k{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em}
 
@@ -194,8 +194,8 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .steps span.done i{background:var(--leaf);color:#fff}
 form, .form{display:grid;gap:14px}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-label.f{display:grid;gap:5px;font-size:.92rem;font-weight:600;min-width:0}
-label.f span.req::after{content:" *";color:var(--danger)}
+label.f,div.f{display:grid;gap:5px;font-size:.92rem;font-weight:600;min-width:0}
+label.f span.req::after,div.f>label.req::after{content:" *";color:var(--danger)}
 input,select,textarea{font:400 1rem var(--f-body);color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:9px;padding:9px 11px;width:100%;min-width:0}
 input:focus,select:focus,textarea:focus{border-color:var(--teal);outline:none}
 textarea{min-height:64px;resize:vertical}
@@ -509,7 +509,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
             <label class="f"><span class="req">अवधि</span><input id="g_duration" placeholder="जैसे: 7 दिवस"></label>
             <label class="f"><span class="req">प्रारम्भ तिथि</span><input id="g_start" type="date"></label>
             <label class="f"><span class="req">समापन तिथि</span><input id="g_end" type="date"></label>
-            <label class="f"><span class="req">जारी करने की तिथि</span><input id="g_issue" type="date"></label>
+            <div class="f"><label for="g_issue" class="req">जारी करने की तिथि</label><input id="g_issue" type="date"><label class="check" style="font-size:.84rem;margin-top:4px"><input type="checkbox" id="g_issueEnd"><span>बैक डेट: समापन तिथि वाले दिन ही जारी</span></label></div>
           </div>
         </div>
         <div class="panel">
@@ -680,7 +680,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610100130";
+const BUILD = "202610100200";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
@@ -992,7 +992,7 @@ async function drawReceipt(a){
   const x = c.getContext("2d"), ink = "#13302C", teal = "#0E7681", gold = "#DE8611", muted = "#56685F";
   x.fillStyle = "#fff"; x.fillRect(0,0,W,H);
   x.fillStyle = teal; x.fillRect(0,0,W,24); x.fillStyle = gold; x.fillRect(0,24,W,8);
-  const logo = await loadImg("img/logo.png"), sign = await loadImg("img/sign.png");
+  const logo = await loadImg("img/logo.png"), sign = await loadImg("img/sign-green.png") || await loadImg("img/sign.png");
   if (logo){ x.globalAlpha = .07; x.drawImage(logo, W/2-450, 900, 900, 900); x.globalAlpha = 1; x.drawImage(logo, 90, 80, 210, 210); }
   x.fillStyle = ink; x.font = '400 78px "Tiro Devanagari Hindi"'; x.textAlign = "left"; x.fillText(ORG.hi, 330, 160);
   x.font = '600 34px "Mukta"'; x.fillStyle = teal; x.fillText(ORG.en, 332, 210);
@@ -1037,7 +1037,7 @@ async function drawReceipt(a){
   x.textAlign = "right"; x.fillStyle = ink; x.font = '600 30px "Mukta"'; x.fillText(S.sign1Name || "", R, y);
   x.font = '400 26px "Mukta"'; x.fillStyle = muted; x.fillText(`अधिकृत हस्ताक्षरकर्ता · ${S.sign1Title || ""}`, R, y+40);
   x.strokeStyle = ink; x.lineWidth = 2; x.beginPath(); x.moveTo(R-430, y-50); x.lineTo(R, y-50); x.stroke();
-  if (sign){ const sw = 400, sh = sw * sign.height / sign.width; x.drawImage(sign, R-415, y-50-sh+18, sw, sh); }
+  if (sign){ const sw = 400, sh = sw * sign.height / sign.width; x.drawImage(sign, R-420, y-38-sh, sw, sh); }
   const qrTxt = [
     "YKVM FEE RECEIPT", "Receipt No: " + a.rcptNo, "Date: " + fmtDate(a.payDate), "Application No: " + a.appNo,
     "Name: " + a.name, "Father/Husband: " + a.father, "Mobile: " + a.mobile, "Email: " + a.email,
@@ -1160,12 +1160,13 @@ function initAdmin(){
 }
 function onGenTrade(){
   const t = tradeById($("#g_trade").value); if (!t) return;
-  $("#g_duration").value = t.duration; $("#g_batchlist").innerHTML = (t.batches||[]).map(b => `<option value="${esc(b)}">`).join("");
-  const bs = t.batches || [];
-  $("#g_batchchips").innerHTML = bs.map((b,i) => `<button type="button" data-bi="${i}">${esc(sp(b))}</button>`).join("") || '<span class="muted" style="font-size:.82rem">इस ट्रेड में कोई बैच दर्ज नहीं है — नाम स्वयं लिखें।</span>';
+  const bs = genBatches(t), nNew = (t.batches||[]).length;
+  $("#g_duration").value = t.duration; $("#g_batchlist").innerHTML = bs.map(b => `<option value="${esc(b)}">`).join("");
+  $("#g_batchchips").innerHTML = bs.map((b,i) => `<button type="button" data-bi="${i}"${i >= nNew ? ' class="past" title="पुराना / बैक डेट बैच"' : ""}>${i >= nNew ? "पुराना · " : ""}${esc(sp(b))}</button>`).join("")
+    + '<button type="button" class="past" data-backdate>+ बैक डेट बैच (नाम व तिथि स्वयं भरें)</button>';
   // trade changed: old batch of another trade must not stay
   const cur = $("#g_batch").value.trim();
-  if (!cur || !bs.some(b => norm(b) === norm(cur))) setGenBatch(bs[0] || "");
+  if (!cur || !bs.some(b => norm(b) === norm(cur))) setGenBatch((t.batches||[])[0] || bs[0] || "");
   else markBatchChip();
 }
 const HI_MON = {"जनवरी":1,"फरवरी":2,"फ़रवरी":2,"मार्च":3,"अप्रैल":4,"अप्रेल":4,"मई":5,"जून":6,"जुलाई":7,"अगस्त":8,"सितंबर":9,"सितम्बर":9,"अक्टूबर":10,"अक्तूबर":10,"नवंबर":11,"नवम्बर":11,"दिसंबर":12,"दिसम्बर":12};
@@ -1176,13 +1177,26 @@ function batchDates(b){
   const y2 = +m[6], y1 = m[3] ? +m[3] : (m1 > m2 ? y2 - 1 : y2), p = n => String(n).padStart(2,"0");
   return { start: `${y1}-${p(m1)}-${p(+m[1])}`, end: `${y2}-${p(m2)}-${p(+m[4])}` };
 }
-function markBatchChip(){ const t = tradeById($("#g_trade").value), cur = norm($("#g_batch").value); $$("#g_batchchips [data-bi]").forEach(x => x.classList.toggle("on", !!t && norm(t.batches[+x.dataset.bi]) === cur)); }
+function genBatches(t){ return t ? [...(t.batches||[]), ...(t.pastBatches||[])] : []; }
+function markBatchChip(){ const t = tradeById($("#g_trade").value), cur = norm($("#g_batch").value), bs = genBatches(t); $$("#g_batchchips [data-bi]").forEach(x => x.classList.toggle("on", !!t && norm(bs[+x.dataset.bi]) === cur)); }
 function setGenBatch(b){
   $("#g_batch").value = sp(b); markBatchChip();
   const d = batchDates(b); if (d){ $("#g_start").value = d.start; $("#g_end").value = d.end; }
   else if (!b){ $("#g_start").value = ""; $("#g_end").value = ""; }
+  if ($("#g_issueEnd")) syncIssueEnd();
 }
-$("#g_batchchips").addEventListener("click", e => { const x = e.target.closest("[data-bi]"); const t = tradeById($("#g_trade").value); if (x && t) setGenBatch(t.batches[+x.dataset.bi]); });
+$("#g_batchchips").addEventListener("click", e => {
+  if (e.target.closest("[data-backdate]")){
+    $("#g_batch").value = ""; $("#g_start").value = ""; $("#g_end").value = ""; markBatchChip();
+    $("#g_issueEnd").checked = true; syncIssueEnd();
+    $("#g_status").textContent = "बैक डेट बैच: बैच का नाम लिखें (जैसे: बैच-1 : 05 मार्च – 11 मार्च 2025) — तिथियाँ अपने-आप भर जाएँगी, या प्रारम्भ/समापन तिथि स्वयं चुनें।";
+    $("#g_batch").focus(); return;
+  }
+  const x = e.target.closest("[data-bi]"); const t = tradeById($("#g_trade").value); if (x && t) setGenBatch(genBatches(t)[+x.dataset.bi]);
+});
+function syncIssueEnd(){ const on = $("#g_issueEnd").checked; $("#g_issue").readOnly = on; if (on && $("#g_end").value) $("#g_issue").value = $("#g_end").value; }
+$("#g_issueEnd").addEventListener("change", () => { if (!$("#g_issueEnd").checked) $("#g_issue").value = today(); syncIssueEnd(); });
+["#g_end","#g_batch"].forEach(id => $(id).addEventListener("change", () => setTimeout(syncIssueEnd)));
 $("#g_batch").addEventListener("change", () => { const d = batchDates($("#g_batch").value); if (d){ $("#g_start").value = d.start; $("#g_end").value = d.end; } markBatchChip(); });
 $("#g_trade").addEventListener("change", onGenTrade);
 
@@ -1264,6 +1278,7 @@ $("#btnIssue").addEventListener("click", async () => {
   const meta = { batch:$("#g_batch").value.trim(), duration:$("#g_duration").value.trim(), start:$("#g_start").value, end:$("#g_end").value, issue:$("#g_issue").value };
   if (!t || !meta.batch || !meta.duration || !meta.start || !meta.end || !meta.issue){ st.innerHTML = '<span style="color:var(--danger)">ट्रेड, बैच, अवधि और तीनों तिथियाँ भरें।</span>'; return; }
   if (meta.end < meta.start){ st.innerHTML = '<span style="color:var(--danger)">समापन तिथि प्रारम्भ तिथि से पहले नहीं हो सकती।</span>'; return; }
+  if (meta.issue > today()){ st.innerHTML = '<span style="color:var(--danger)">जारी करने की तिथि आज के बाद की नहीं हो सकती।</span>'; return; }
   const good = ROWS.filter(r => !r.skip && !rowProblem(r)).map(({skip, ...r}) => r); if (!good.length) return;
   $("#btnIssue").disabled = true; st.textContent = "सीरियल नंबर बन रहे हैं…";
   const year = meta.issue.slice(0,4), prefix = `YKVM/${t.code}/${year}/`;
@@ -1347,6 +1362,7 @@ function renderCfg(){
         <label class="f"><span>बैच (हर पंक्ति एक बैच)</span><textarea data-k="batches">${esc((t.batches||[]).join("\n"))}</textarea></label>
         <label class="f"><span>अतिरिक्त प्रश्न (हर पंक्ति एक)</span><textarea data-k="extra">${esc((t.extra||[]).join("\n"))}</textarea></label>
       </div>
+      <label class="f"><span>पुराने / बैक डेट बैच (केवल प्रमाण पत्र के लिए)</span><textarea data-k="pastBatches" rows="2">${esc((t.pastBatches||[]).join("\n"))}</textarea></label>
       <div class="row"><button class="btn btn-soft btn-sm" type="button" data-del="${i}">यह ट्रेड हटाएँ</button></div>
     </div>`).join("");
 }
@@ -1359,7 +1375,7 @@ function readCfg(){
       if (k === "active") t.active = el.checked;
       else if (k === "fee") t.fee = Math.max(0, Math.round(Number(el.value)||0));
       else if (k === "discount") t.discount = Math.max(0, Number(el.value)||0);
-      else if (k === "batches" || k === "extra") t[k] = el.value.split("\n").map(s => s.trim()).filter(Boolean);
+      else if (k === "batches" || k === "extra" || k === "pastBatches") t[k] = el.value.split("\n").map(s => s.trim()).filter(Boolean);
       else if (k === "code") t.code = el.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
       else t[k] = el.value.trim();
     });
@@ -1401,6 +1417,7 @@ function discRowHTML(t, i){
       <label class="f"><span>बैच सूची (हर पंक्ति में एक बैच)</span><textarea data-d="batches">${esc((t.batches||[]).join("\n"))}</textarea></label>
       <label class="f"><span>अतिरिक्त प्रश्न (हर पंक्ति में एक)</span><textarea data-d="extra">${esc((t.extra||[]).join("\n"))}</textarea></label>
     </div>
+    <label class="f"><span>पुराने / बैक डेट बैच (केवल प्रमाण पत्र के लिए, आवेदन फॉर्म में नहीं दिखेंगे) · हर पंक्ति में एक, जैसे: बैच-1 : 05 मार्च – 11 मार्च 2025</span><textarea data-d="pastBatches" rows="2">${esc((t.pastBatches||[]).join("\n"))}</textarea></label>
     <label class="f"><span>विवरण (Description)</span><input data-d="about" value="${esc(t.about||"")}"></label>
     <label class="f"><span>Razorpay Payment Link (तय राशि वाला, वैकल्पिक)</span><input data-d="payLink" style="font-size:.92rem" placeholder="https://pages.razorpay.com/..." value="${esc(t.payLink||"")}"></label>
     <p class="warnline" data-warn ${linkStale ? "" : "hidden"}>${RZP_WARN}</p>
@@ -1422,7 +1439,7 @@ function readDiscRow(tr){
   const lines = k => g(k).split("\n").map(x => x.trim()).filter(Boolean);
   return { name: g("name").trim(), en: g("en").trim(), code: g("code").trim().toUpperCase().replace(/[^A-Z0-9]/g,""), duration: g("duration").trim(),
     fee: Math.max(0, Math.round(Number(g("fee"))||0)), discount: Math.max(0, Math.round(Number(g("discount"))||0)), discountType: "amount",
-    active: q("active") ? q("active").checked : true, batches: lines("batches"), extra: lines("extra"), about: g("about").trim(), payLink: g("payLink").trim() };
+    active: q("active") ? q("active").checked : true, batches: lines("batches"), pastBatches: lines("pastBatches"), extra: lines("extra"), about: g("about").trim(), payLink: g("payLink").trim() };
 }
 function syncDiscDraft(){
   $$("#discTable .discrow[data-i]").forEach(tr => { const i = +tr.dataset.i; Object.assign(DISC_DRAFT[i], readDiscRow(tr)); });
@@ -1587,7 +1604,7 @@ function fillXFilters(){
 }
 function fillXBatch(){
   const tn = $("#x_trade").value, m = new Map(), add = b => { const k = sp(b); if (k && !m.has(k)) m.set(k, k); };
-  (PORTAL.trades||[]).filter(t => !tn || sp(t.name) === sp(tn)).forEach(t => (t.batches||[]).forEach(add));
+  (PORTAL.trades||[]).filter(t => !tn || sp(t.name) === sp(tn)).forEach(t => [...(t.batches||[]), ...(t.pastBatches||[])].forEach(add));
   APPS.filter(a => !tn || sp(a.trade) === sp(tn)).forEach(a => add(a.batch));
   REG.certificates.filter(c => !tn || sp(c.trade) === sp(tn)).forEach(c => add(c.batch));
   const bs = new Set(m.keys());
