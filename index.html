@@ -679,7 +679,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610091819";
+const BUILD = "202610100010";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
@@ -1200,6 +1200,8 @@ $("#btnFromApps").addEventListener("click", async () => {
   const list = APPS.filter(a => (a.tradeId === t.id || same(a.trade, t.name)) && (!bn || same(a.batch, bn)) && (!onlyVer || a.verified));
   if (!list.length){
     const anyTrade = APPS.filter(a => a.tradeId === t.id || same(a.trade, t.name)).length;
+    const unver = onlyVer ? APPS.filter(a => (a.tradeId === t.id || same(a.trade, t.name)) && (!bn || same(a.batch, bn)) && !a.verified).length : 0;
+    if (unver){ st.innerHTML = `<span style="color:var(--danger)">इस ट्रेड/बैच के ${unver} आवेदन मिले, पर उनका भुगतान अभी "सत्यापित" नहीं है।</span> ऊपर "केवल वे आवेदन जिनका भुगतान सत्यापित है" का टिक हटाकर दोबारा बटन दबाएँ, या "रिपोर्ट, रजिस्टर व Excel" में उस आवेदन के आगे "सत्यापित" पर टिक लगाएँ।`; return; }
     st.innerHTML = `<span style="color:var(--danger)">"${esc(t.name)}"${bn ? ` के बैच "${esc(bn)}"` : ""} का कोई आवेदन रजिस्टर में नहीं मिला${onlyVer ? " (सत्यापित)" : ""}।</span>` + (anyTrade && bn ? ` इस ट्रेड के कुल ${anyTrade} आवेदन हैं; बैच का नाम खाली करके या सही बैच चुनकर दोबारा प्रयास करें।` : ` आवेदन "रिपोर्ट, रजिस्टर व Excel" में WhatsApp संदेश चिपकाकर जोड़े जाते हैं।`);
     return;
   }
