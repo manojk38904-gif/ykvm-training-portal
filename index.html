@@ -467,6 +467,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
           <h3>3. जारी करें</h3>
           <p class="muted" style="font-size:.93rem">"जारी करें" दबाने पर हर प्रशिक्षार्थी को सीरियल नंबर व सत्यापन कोड मिलेगा, रिकॉर्ड सत्यापन रजिस्टर में सहेजा जाएगा और सभी प्रमाण पत्रों की एक PDF बनेगी।</p>
           <div class="row"><button class="btn btn-accent" type="button" id="btnIssue" disabled>प्रमाण पत्र जारी करें</button><button class="btn btn-soft" type="button" id="btnPdfAgain" hidden>PDF फिर से सहेजें</button></div>
+          <p class="note warn" id="issueHint" style="font-size:.9rem">यह बटन तभी चालू होगा जब ऊपर "Excel / CSV चुनें" से प्रशिक्षार्थियों की शीट चुनी जाएगी और उसमें कम से कम एक सही पंक्ति होगी।</p>
           <p class="status" id="g_status"></p>
           <img class="canvasview" id="g_sample" alt="पहले प्रमाण पत्र का पूर्वावलोकन" hidden>
         </div>
@@ -1057,7 +1058,7 @@ $("#g_file").addEventListener("change", async e => {
       village: idx.village!==undefined ? String(r[idx.village]).trim() : "", grade: idx.grade!==undefined ? String(r[idx.grade]).trim() : ""
     }));
     renderPreview();
-  } catch(err){ ROWS = []; $("#g_preview").innerHTML = `<p class="note err">${esc(err.message || "फ़ाइल पढ़ी नहीं जा सकी।")}</p>`; $("#btnIssue").disabled = true; }
+  } catch(err){ ROWS = []; $("#g_preview").innerHTML = `<p class="note err">${esc(err.message || "फ़ाइल पढ़ी नहीं जा सकी।")}</p>`; $("#btnIssue").disabled = true; $("#issueHint").hidden = false; $("#issueHint").textContent = "शीट पढ़ी नहीं जा सकी। ऊपर लाल संदेश देखें, या \"नमूना Excel शीट सहेजें\" से नमूना लेकर उसी में नाम भरें।"; }
 });
 function rowProblem(r){
   if (!r.reg || !r.name || !r.father) return "पंजीकरण/नाम/पिता का नाम खाली";
@@ -1071,6 +1072,8 @@ function renderPreview(){
   ${ROWS.map((r,i) => { const p = rowProblem(r); return `<tr><td class="mono">${i+1}</td><td class="mono">${esc(r.reg)}</td><td>${esc(r.name)}</td><td>${esc(r.father)}</td><td>${esc(r.village)}</td><td>${esc(r.grade)}</td><td>${p ? `<span class="pill bad">${esc(p)}</span>` : '<span class="pill ok">ठीक</span>'}</td></tr>`; }).join("")}
   </tbody></table></div>`;
   $("#btnIssue").disabled = ROWS.length - bad === 0;
+  $("#issueHint").hidden = ROWS.length - bad > 0;
+  if (ROWS.length - bad === 0) $("#issueHint").textContent = ROWS.length ? "शीट की किसी भी पंक्ति में सही विवरण नहीं है (ऊपर तालिका में कारण देखें)। ठीक करके दोबारा चुनें।" : "शीट में कोई प्रशिक्षार्थी नहीं मिला। पहली पंक्ति में शीर्षक और नीचे नाम भरें।";
 }
 $("#g_trade").addEventListener("change", () => { if (ROWS.length) renderPreview(); });
 
