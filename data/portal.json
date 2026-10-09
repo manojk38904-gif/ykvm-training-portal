@@ -131,6 +131,26 @@
    "discountType": "amount",
    "payLink": "",
    "payLinkAmount": null
+  },
+  {
+   "id": "tmv0l6j2y",
+   "name": "फोटो एंव विडिओ ग्राफी",
+   "en": "Photo and Video Graphy",
+   "code": "PVG",
+   "fee": 11000,
+   "discount": 10500,
+   "discountType": "amount",
+   "duration": "7",
+   "active": false,
+   "batches": [
+    "बैच-1 : 01 सितंबर  – 07 सितंबर  2026"
+   ],
+   "extra": [
+    "अंतिम पास कक्षा / डिग्री"
+   ],
+   "about": "फोटो ग्राफी करना , ईवेंट फोटो एंव विडिओ ग्राफी",
+   "payLink": "",
+   "payLinkAmount": null
   }
  ]
 }
