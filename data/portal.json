@@ -141,7 +141,7 @@
    "discount": 10500,
    "discountType": "amount",
    "duration": "7",
-   "active": false,
+   "active": true,
    "batches": [
     "बैच-1 : 01 सितंबर  – 07 सितंबर  2026"
    ],
