@@ -680,7 +680,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610100120";
+const BUILD = "202610100130";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
