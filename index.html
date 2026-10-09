@@ -493,7 +493,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
       <div id="sub-apps" class="form" hidden>
         <div class="panel">
           <h3>रिपोर्ट व Excel</h3>
-          <p class="muted" style="font-size:.93rem">Excel में अलग-अलग शीट बनेंगी: सारांश · दिनांकवार आवेदन व भुगतान · आवेदन व भुगतान (पूरा विवरण) · प्रशिक्षण पूर्ण (बैचवार, तिथि व अवधि सहित) · प्रशिक्षित प्रशिक्षार्थी · प्रमाण पत्र (जारी तिथि वार व पूरा विवरण) · ट्रेड-बैच-शुल्क।</p>
+          <p class="muted" style="font-size:.93rem">Excel में अलग-अलग शीट बनेंगी: सारांश · दिनांकवार आवेदन व भुगतान · आवेदन व भुगतान (पूरा विवरण) · भुगतान-रसीद ट्रेडवार सारांश · हर ट्रेड की अलग "रसीद" शीट (भुगतान करने वाले व रसीद पाने वाले सभी का विवरण) · प्रशिक्षण पूर्ण (बैचवार, तिथि व अवधि सहित) · प्रशिक्षित प्रशिक्षार्थी · प्रमाण पत्र (जारी तिथि वार व पूरा विवरण) · ट्रेड-बैच-शुल्क।</p>
           <div class="grid2">
             <label class="f"><span>ट्रेड</span><select id="x_trade"><option value="">सभी ट्रेड</option></select></label>
             <label class="f"><span>बैच</span><select id="x_batch"><option value="">सभी बैच</option></select></label>
@@ -1518,6 +1518,26 @@ $("#btnXlsx").addEventListener("click", async () => {
   add([["क्रम","आवेदन तिथि","आवेदन संख्या","रसीद संख्या","नाम","पिता/पति का नाम","जन्म तिथि","लिंग","मोबाइल","ई-मेल","श्रेणी","शैक्षिक योग्यता","पता","ट्रेड","बैच","अवधि","प्रशिक्षण राशि (₹)","छूट (₹)","भुगतान राशि (₹)","Razorpay Payment ID","भुगतान तिथि","भुगतान सत्यापित","प्रशिक्षण स्थिति","प्रमाण पत्र सीरियल","अतिरिक्त जानकारी"]]
     .concat(R.apps.map((a,i) => { const c = certFor(a); return [i+1, fmtDate(a.appDate||a.payDate), a.appNo, a.rcptNo, a.name, a.father, fmtDate(a.dob), a.gender, a.mobile, a.email, a.cat, a.edu, a.address, a.trade, a.batch, a.duration, +a.fee||0, +a.discount||0, +a.amount||0, a.payId, fmtDate(a.payDate), a.verified?"हाँ":"नहीं", c ? "प्रशिक्षण पूर्ण" : (a.payId ? "भुगतान प्राप्त" : "आवेदन"), c ? c.serial : "", a.extra]; })),
     "आवेदन व भुगतान", [6,12,26,24,22,22,12,8,13,26,14,14,30,20,34,10,14,10,14,22,12,10,14,20,30]);
+  // paid + receipt issued, trade-wise
+  const paidApps = R.apps.filter(a => a.payId || a.rcptNo);
+  const byTrade = {};
+  paidApps.forEach(a => { const k = a.trade || "अन्य"; (byTrade[k] = byTrade[k] || []).push(a); });
+  const tradeOrder = (PORTAL.trades||[]).map(x => x.name).filter(n => byTrade[n]).concat(Object.keys(byTrade).filter(n => !(PORTAL.trades||[]).some(x => x.name === n)));
+  const RS = [["क्रम","ट्रेड","कुल भुगतानकर्ता","रसीद जारी","भुगतान सत्यापित","प्रशिक्षण राशि (₹)","कुल छूट (₹)","कुल प्राप्त राशि (₹)"]];
+  tradeOrder.forEach((tn2, i) => { const L = byTrade[tn2]; RS.push([i+1, tn2, L.length, L.filter(a => a.rcptNo).length, L.filter(a => a.verified).length, L.reduce((x,a)=>x+(+a.fee||0),0), L.reduce((x,a)=>x+(+a.discount||0),0), L.reduce((x,a)=>x+(+a.amount||0),0)]); });
+  if (tradeOrder.length) RS.push(["","कुल", paidApps.length, paidApps.filter(a => a.rcptNo).length, paidApps.filter(a => a.verified).length, paidApps.reduce((x,a)=>x+(+a.fee||0),0), paidApps.reduce((x,a)=>x+(+a.discount||0),0), paidApps.reduce((x,a)=>x+(+a.amount||0),0)]);
+  add(RS, "भुगतान-रसीद ट्रेडवार सारांश", [6,26,14,12,14,16,14,18]);
+  const RH = ["क्रम","रसीद संख्या","रसीद/भुगतान तिथि","आवेदन संख्या","नाम","पिता/पति का नाम","मोबाइल","ई-मेल","पता","बैच","अवधि","प्रशिक्षण राशि (₹)","छूट (₹)","प्राप्त राशि (₹)","Razorpay Payment ID","भुगतान सत्यापित","प्रशिक्षण स्थिति"];
+  const used = new Set(["सारांश","दिनांकवार आवेदन-भुगतान","आवेदन व भुगतान","भुगतान-रसीद ट्रेडवार सारांश","प्रशिक्षण पूर्ण (बैचवार)","प्रशिक्षित प्रशिक्षार्थी","प्रमाण पत्र (तिथिवार)","प्रमाण पत्र (पूरा विवरण)","ट्रेड-बैच-शुल्क"]);
+  tradeOrder.forEach(tn2 => {
+    const L = byTrade[tn2].slice().sort((p,q) => String(p.payDate).localeCompare(String(q.payDate)));
+    const rows = [RH].concat(L.map((a,i) => { const c = certFor(a); return [i+1, a.rcptNo, fmtDate(a.payDate), a.appNo, a.name, a.father, a.mobile, a.email, a.address, a.batch, a.duration, +a.fee||0, +a.discount||0, +a.amount||0, a.payId, a.verified?"हाँ":"नहीं", c ? "प्रशिक्षण पूर्ण" : "भुगतान प्राप्त"]; }));
+    rows.push(["","","","","","","","","","","कुल", L.reduce((x,a)=>x+(+a.fee||0),0), L.reduce((x,a)=>x+(+a.discount||0),0), L.reduce((x,a)=>x+(+a.amount||0),0)]);
+    let nm = ("रसीद - " + tn2).replace(/[\[\]:*?\/\\]/g, " ").slice(0, 31).trim(), k = 2;
+    while (used.has(nm)) nm = (("रसीद - " + tn2).slice(0, 27) + " " + k++).replace(/[\[\]:*?\/\\]/g, " ");
+    used.add(nm);
+    add(rows, nm, [6,24,13,26,22,22,13,26,30,34,10,14,10,14,22,10,14]);
+  });
   const TR = [["क्रम","ट्रेड","बैच","प्रारम्भ तिथि","समापन तिथि","अवधि","कुल दिन","प्रशिक्षित संख्या","प्रमाण पत्र जारी तिथि"]].concat(R.trainedRows.map((r,i) => [i+1, r.trade, r.batch, fmtDate(r.start), fmtDate(r.end), r.duration, daysBetween(r.start,r.end), r.count, fmtDate(r.issue)]));
   if (R.trainedRows.length) TR.push(["","","","","","","कुल", R.trainedRows.reduce((s,r)=>s+r.count,0)]);
   add(TR, "प्रशिक्षण पूर्ण (बैचवार)", [6,20,34,13,13,10,8,14,16]);
