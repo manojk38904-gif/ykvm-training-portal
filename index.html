@@ -679,7 +679,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610091756";
+const BUILD = "202610091819";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
@@ -827,7 +827,7 @@ function onTrade(){
   const t = tradeById($("#selTrade").value), sb = $("#selBatch");
   if (!t){ sb.disabled = true; sb.innerHTML = '<option value="">— पहले ट्रेड चुनें —</option>'; $("#s2").hidden = true; setStep(1); return; }
   sb.disabled = false;
-  sb.innerHTML = '<option value="">— बैच चुनें —</option>' + (t.batches||[]).map(b => `<option>${esc(b)}</option>`).join("");
+  sb.innerHTML = '<option value="">— बैच चुनें —</option>' + (t.batches||[]).map(b => `<option value="${esc(String(b).replace(/\s+/g," ").trim())}">${esc(b)}</option>`).join("");
   if ((t.batches||[]).length === 1) sb.selectedIndex = 1;
   $("#tradeInfo").innerHTML = `<b>${esc(t.name)}</b> · अवधि ${esc(t.duration)} · प्रशिक्षण राशि <span class="mono">₹${inr(t.fee)}</span>${disc(t) ? ` · छूट <span class="mono">₹${inr(disc(t))}</span>` : ""} · कुल देय <span class="mono">₹${inr(payable(t))}</span>`;
   $("#formTitle").textContent = `आवेदन फॉर्म: ${t.name}`;
@@ -1543,11 +1543,13 @@ function fillXFilters(){
   ts.innerHTML = '<option value="">सभी ट्रेड</option>' + (PORTAL.trades||[]).map(t => `<option value="${esc(t.name)}">${esc(t.name)}</option>`).join("");
   ts.value = cur; fillXBatch();
 }
+const sp = v => String(v||"").replace(/\s+/g, " ").trim();
 function fillXBatch(){
-  const tn = $("#x_trade").value, bs = new Set();
-  (PORTAL.trades||[]).filter(t => !tn || t.name === tn).forEach(t => (t.batches||[]).forEach(b => bs.add(b)));
-  APPS.filter(a => !tn || a.trade === tn).forEach(a => a.batch && bs.add(a.batch));
-  REG.certificates.filter(c => !tn || c.trade === tn).forEach(c => c.batch && bs.add(c.batch));
+  const tn = $("#x_trade").value, m = new Map(), add = b => { const k = sp(b); if (k && !m.has(k)) m.set(k, k); };
+  (PORTAL.trades||[]).filter(t => !tn || sp(t.name) === sp(tn)).forEach(t => (t.batches||[]).forEach(add));
+  APPS.filter(a => !tn || sp(a.trade) === sp(tn)).forEach(a => add(a.batch));
+  REG.certificates.filter(c => !tn || sp(c.trade) === sp(tn)).forEach(c => add(c.batch));
+  const bs = new Set(m.keys());
   const cur = $("#x_batch").value;
   $("#x_batch").innerHTML = '<option value="">सभी बैच</option>' + [...bs].map(b => `<option value="${esc(b)}">${esc(b)}</option>`).join("");
   $("#x_batch").value = [...bs].includes(cur) ? cur : "";
@@ -1555,8 +1557,8 @@ function fillXBatch(){
 $("#x_trade").addEventListener("change", () => { fillXBatch(); renderAppTable(); renderReports(); });
 ["x_batch","x_from","x_to"].forEach(id => $("#"+id).addEventListener("change", () => { renderAppTable(); renderReports(); }));
 const inRange = d => { const f = $("#x_from").value, t = $("#x_to").value; return (!f || (d && d >= f)) && (!t || (d && d <= t)); };
-function filteredApps(){ const tn = $("#x_trade").value, bn = $("#x_batch").value; return APPS.filter(a => (!tn || a.trade === tn) && (!bn || a.batch === bn) && inRange(a.appDate || a.payDate)); }
-function filteredCerts(){ const tn = $("#x_trade").value, bn = $("#x_batch").value; return REG.certificates.filter(c => (!tn || c.trade === tn) && (!bn || c.batch === bn) && inRange(c.end || c.issue)); }
+function filteredApps(){ const tn = sp($("#x_trade").value), bn = sp($("#x_batch").value); return APPS.filter(a => (!tn || sp(a.trade) === tn) && (!bn || sp(a.batch) === bn) && inRange(a.appDate || a.payDate)); }
+function filteredCerts(){ const tn = sp($("#x_trade").value), bn = sp($("#x_batch").value); return REG.certificates.filter(c => (!tn || sp(c.trade) === tn) && (!bn || sp(c.batch) === bn) && inRange(c.end || c.issue)); }
 const certFor = a => REG.certificates.find(c => (c.reg && a.appNo && norm(c.reg) === norm(a.appNo)) || (c.tradeId === a.tradeId && norm(c.name) === norm(a.name) && norm(c.father) === norm(a.father)));
 function daysBetween(a, b){ if (!a || !b) return ""; return Math.round((new Date(b) - new Date(a)) / 864e5) + 1; }
 function reportData(){
