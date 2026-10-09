@@ -11,3 +11,7 @@
 - टोकन `data/admin.enc.json` में पासवर्ड से एन्क्रिप्टेड (PBKDF2-SHA256 600,000 + AES-GCM) रहता है; पासवर्ड कहीं सहेजा नहीं जाता।
 - बदलाव GitHub पर commit होते हैं (`data/portal.json`, `data/certificates.json`); आवेदन रजिस्टर `data/applications.enc.json` में एन्क्रिप्टेड।
 - 30 मिनट निष्क्रिय रहने पर सत्र अपने-आप समाप्त।
+
+## Google Sheet (स्वचालित आवेदन व रसीद रिकॉर्ड)
+
+सेटअप के चरण: `google-sheet/README.md`। Apps Script कोड: `google-sheet/Code.gs`।

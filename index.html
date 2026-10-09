@@ -521,6 +521,16 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
           <div id="rptCerts"></div>
         </div>
         <div class="panel">
+          <h3>Google Sheet से आवेदन व रसीदें मँगाएँ</h3>
+          <p class="muted" style="font-size:.93rem">प्रशिक्षार्थी का हर आवेदन और हर रसीद अपने-आप आपकी Google Sheet में दर्ज होती है (ट्रेडवार अलग शीट सहित)। यहाँ बटन दबाकर उन्हें इस रजिस्टर में ले आएँ, ताकि रिपोर्ट, Excel और प्रमाण पत्र सूची में दिखें।</p>
+          <p class="note warn" id="sheetOff" style="font-size:.9rem" hidden>Google Sheet अभी जुड़ी नहीं है। "भुगतान व प्रमाण पत्र सेटिंग" में Web App URL डालें।</p>
+          <div class="grid2">
+            <label class="f"><span>Google Sheet पढ़ने की कुंजी</span><input id="sheetKey" type="password" autocomplete="off" class="mono" placeholder="setup() से मिली कुंजी"></label>
+          </div>
+          <div class="row"><button class="btn btn-soft btn-sm" type="button" id="btnSheetKey">कुंजी सहेजें</button><button class="btn btn-accent" type="button" id="btnSheetImport">Google Sheet से रजिस्टर अपडेट करें</button><a class="btn btn-ghost btn-sm" id="sheetOpen" href="#" target="_blank" rel="noopener" hidden>Google Sheet खोलें</a></div>
+          <p class="status" id="sheetStatus"></p>
+        </div>
+        <div class="panel">
           <h3>WhatsApp से आया आवेदन जोड़ें</h3>
           <p class="muted" style="font-size:.93rem">प्रशिक्षार्थी का "YKVM प्रशिक्षण आवेदन व शुल्क" वाला WhatsApp संदेश पूरा कॉपी करके यहाँ चिपकाएँ। एक साथ कई संदेश भी चिपका सकते हैं। यह रजिस्टर केवल संस्था (owner/editor) को दिखता है।</p>
           <textarea id="waPaste" style="min-height:140px" placeholder="*YKVM प्रशिक्षण आवेदन व शुल्क*&#10;आवेदन सं.: ...&#10;नाम: ..."></textarea>
@@ -551,6 +561,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
           <h3>भुगतान व प्रमाण पत्र सेटिंग</h3>
           <div class="grid2">
             <label class="f" style="grid-column:1/-1"><span>Razorpay Payment Page लिंक (राशि अपने-आप भरने हेतु)</span><input id="c_page" class="mono" placeholder="https://pages.razorpay.com/pl_XXXXXXXX/view"><small class="muted" style="font-weight:400">Razorpay डैशबोर्ड → Payment Pages में एक पेज बनाएँ, जिसमें "Amount" नाम का "Customer decides amount" फ़ील्ड हो। उसका लंबा लिंक (pages.razorpay.com/pl_…/view) यहाँ डालें, rzp.io वाला छोटा लिंक नहीं।</small></label>
+            <label class="f" style="grid-column:1/-1"><span>Google Sheet Web App URL (हर आवेदन व रसीद अपने-आप दर्ज करने हेतु)</span><input id="c_sheet" class="mono" placeholder="https://script.google.com/macros/s/…/exec"><small class="muted" style="font-weight:400">Google Sheet में YKVM Apps Script लगाकर "Deploy → Web app" से मिला लिंक (…/exec) यहाँ डालें।</small></label>
             <label class="f"><span>Razorpay.me लिंक (बैकअप)</span><input id="c_rzp" class="mono"></label>
             <label class="f"><span>संस्था WhatsApp (देश कोड सहित)</span><input id="c_wa" class="mono"></label>
             <label class="f"><span>संस्था ई-मेल</span><input id="c_mail" class="mono"></label>
@@ -756,6 +767,7 @@ $("#s2").addEventListener("submit", e => {
     extra: $$("#extraFields input").map(i => [i.dataset.q, i.value.trim()]), submittedAt: d.toISOString(), appDate: today()
   };
   ss.set("ykvm_app", APP);
+  postSheet(APP);
   openPay();
 });
 
@@ -808,6 +820,7 @@ $("#btnReceipt").addEventListener("click", async () => {
   APP.rcptNo = APP.rcptNo || `YKVM/RCPT/${finYear(pdate)}/${String(Date.now()).slice(-7)}`;
   ss.set("ykvm_app", APP);
   await renderReceipt();
+  postSheet(APP);
   if ((dbNS || SESSION) && isEditor) saveApp(APP).catch(() => {});
 });
 function finYear(iso){ const [y,m] = iso.split("-").map(Number); const s = m >= 4 ? y : y-1; return `${s}-${String(s+1).slice(-2)}`; }
@@ -1024,7 +1037,7 @@ $("#verifyForm").addEventListener("submit", async e => {
 function sub(name){
   $$("[data-sub]").forEach(b => b.className = "btn btn-sm " + (b.dataset.sub === name ? "btn-teal" : "btn-soft"));
   ["disc","gen","apps","reg","cfg"].forEach(k => $("#sub-"+k).hidden = k !== name);
-  if (name === "apps") renderApps();
+  if (name === "apps"){ renderApps(); sheetPanel(); }
   if (name === "disc") renderDisc();
   if (name === "reg") renderRegister(); if (name === "cfg") renderCfg();
 }
@@ -1180,7 +1193,7 @@ $("#btnRegCsv").addEventListener("click", () => {
 });
 
 /* config editor */
-const CFG = [["c_page","paymentPageUrl"],["c_rzp","razorpayLink"],["c_wa","orgWhatsApp"],["c_mail","orgEmail"],["c_tan","tan"],["c_verify","verifyUrl"],["c_place","certPlace"],["c_s1n","sign1Name"],["c_s1t","sign1Title"],["c_s2n","sign2Name"],["c_s2t","sign2Title"]];
+const CFG = [["c_sheet","sheetUrl"],["c_page","paymentPageUrl"],["c_rzp","razorpayLink"],["c_wa","orgWhatsApp"],["c_mail","orgEmail"],["c_tan","tan"],["c_verify","verifyUrl"],["c_place","certPlace"],["c_s1n","sign1Name"],["c_s1t","sign1Title"],["c_s2n","sign2Name"],["c_s2t","sign2Title"]];
 let DRAFT = null;
 function renderCfg(){
   if (!DRAFT) DRAFT = JSON.parse(JSON.stringify(PORTAL));
@@ -1222,6 +1235,7 @@ $("#btnAddTrade")?.addEventListener("click", () => { readCfg(); DRAFT.trades.pus
 document.addEventListener("click", e => { const d = e.target.closest("[data-del]"); if (!d) return; readCfg(); DRAFT.trades.splice(+d.dataset.del, 1); renderCfg(); });
 $("#btnSaveCfg").addEventListener("click", async () => {
   readCfg(); const st = $("#cfgStatus");
+  if (DRAFT.settings.sheetUrl && !SHEET_RE.test(DRAFT.settings.sheetUrl)){ st.innerHTML = '<span style="color:var(--danger)">Google Sheet का Web App URL https://script.google.com/macros/s/…/exec जैसा होना चाहिए।</span>'; return; }
   if (DRAFT.settings.paymentPageUrl && !/^https:\/\/pages\.razorpay\.com\/pl_[A-Za-z0-9]+/.test(DRAFT.settings.paymentPageUrl)){ st.innerHTML = '<span style="color:var(--danger)">Payment Page का लंबा लिंक डालें, जो https://pages.razorpay.com/pl_ से शुरू हो।</span>'; return; }
   st.textContent = "सहेजा जा रहा है…";
   try { const base = await freshPortal(); base.settings = DRAFT.settings; await persist({"data/portal.json": JSON.stringify(base, null, 1)}, "भुगतान व प्रमाण पत्र सेटिंग अपडेट"); DRAFT = base; PORTAL = JSON.parse(JSON.stringify(DRAFT)); DRAFT = null; renderTrades(); fillTradeSelect(); fillRail(); initAdmin(); renderCfg(); st.textContent = "सेटिंग सफलतापूर्वक अपडेट कर दी गई हैं।"; }
@@ -1370,7 +1384,7 @@ function appRecord(a){
   return { appNo:a.appNo||"", rcptNo:a.rcptNo||"", name:a.name||"", father:a.father||"", dob:a.dob||"", gender:a.gender||"",
     mobile:a.mobile||"", email:a.email||"", cat:a.cat||"", edu:a.edu||"", address:a.address || [a.village,a.block,a.district,a.pin].filter(Boolean).join(", "),
     tradeId:a.tradeId||"", trade:a.trade||"", batch:a.batch||"", duration:a.duration||"", fee:Number(a.fee)||0, discount:Number(a.discount)||0,
-    amount:Number(a.amount)||0, payId:a.payId||"", payDate:a.payDate||"", extra:(a.extra||[]).map(([q,v]) => q + ": " + v).join("; "),
+    amount:Number(a.amount)||0, payId:a.payId||"", payDate:a.payDate||"", extra: Array.isArray(a.extra) ? a.extra.map(([q,v]) => q + ": " + v).join("; ") : String(a.extra||""),
     appDate: a.appDate || a.payDate || "", verified: !!a.verified, addedAt: new Date().toISOString() };
 }
 async function saveApps(list){
@@ -1632,10 +1646,10 @@ function enterAdmin(){
   $("#adminBar").hidden = false; $("#btnAdminLogin").hidden = true;
   $("#adminWho").textContent = "Admin सत्र सक्रिय · 30 मिनट निष्क्रिय रहने पर अपने-आप लॉगआउट";
   $("#pwPanel").hidden = false;
-  initAdmin(); DISC_DRAFT = null; sub("disc"); startApps();
+  initAdmin(); DISC_DRAFT = null; sub("disc"); startApps(); loadSheetKey();
 }
 function logout(msg){
-  SESSION = null; isEditor = false; APPS = []; DISC_DRAFT = null; DRAFT = null;
+  SESSION = null; isEditor = false; APPS = []; SHEET_KEY = ""; $("#sheetKey").value = ""; DISC_DRAFT = null; DRAFT = null;
   try { sessionStorage.removeItem("ykvm_admin"); } catch(e){}
   $("#t-admin").hidden = true; $("#adminBar").hidden = true; $("#pwPanel").hidden = true;
   if (!window.claude?.use) $("#btnAdminLogin").hidden = false;
@@ -1713,6 +1727,57 @@ $("#btnChangePw").addEventListener("click", async () => {
   st.textContent = "बदला जा रहा है…";
   try { await writeAdminFile(SESSION.token, p1, SESSION.dek); $("#np1").value = ""; $("#np2").value = ""; st.textContent = "पासवर्ड बदल दिया गया। अगली बार नए पासवर्ड से लॉगिन करें।"; }
   catch(x){ st.innerHTML = `<span style="color:var(--danger)">${esc(x.message || "नहीं बदला जा सका")}</span>`; }
+});
+
+/* ---------- Google Sheet (auto-record of applications & receipts) ---------- */
+const SHEET_RE = /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/;
+let SHEET_KEY = "";
+function sheetUrl(){ const u = (PORTAL?.settings?.sheetUrl || "").trim(); return SHEET_RE.test(u) ? u : ""; }
+function postSheet(a){
+  const u = sheetUrl(); if (!u || !a) return;
+  try {
+    const r = appRecord(a); delete r.verified; delete r.addedAt;
+    fetch(u, { method:"POST", mode:"no-cors", keepalive:true, headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: JSON.stringify(r) }).catch(() => {});
+  } catch(e){}
+}
+async function loadSheetKey(){
+  SHEET_KEY = "";
+  if (!SESSION) return;
+  try { const r = await ghGet("data/sheet.enc.json"); if (r) SHEET_KEY = await aesDec(await rawKey(SESSION.dek), JSON.parse(r.text)); } catch(e){}
+  $("#sheetKey").value = SHEET_KEY ? "••••••••••" : "";
+}
+function sheetPanel(){ $("#sheetOff").hidden = !!sheetUrl(); }
+$("#btnSheetKey").addEventListener("click", async () => {
+  const st = $("#sheetStatus"), v = $("#sheetKey").value.trim();
+  if (!v || /^•+$/.test(v)){ st.textContent = "कुंजी भरें।"; return; }
+  SHEET_KEY = v;
+  if (!SESSION){ st.textContent = "कुंजी इस सत्र के लिए ले ली गई।"; return; }
+  st.textContent = "सहेजी जा रही है…";
+  try { await ghPut("data/sheet.enc.json", JSON.stringify({ v:1, alg:"AES-GCM", ...(await aesEnc(await rawKey(SESSION.dek), v)) }), "Google Sheet कुंजी अपडेट"); $("#sheetKey").value = "••••••••••"; st.textContent = "कुंजी एन्क्रिप्ट होकर सहेज ली गई।"; }
+  catch(e){ st.innerHTML = `<span style="color:var(--danger)">सहेजी नहीं जा सकी: ${esc(e?.message||"error")}</span>`; }
+});
+$("#btnSheetImport").addEventListener("click", async () => {
+  const st = $("#sheetStatus"), u = sheetUrl(), typed = $("#sheetKey").value.trim();
+  if (typed && !/^•+$/.test(typed)) SHEET_KEY = typed;
+  if (!u){ st.innerHTML = '<span style="color:var(--danger)">पहले "भुगतान व प्रमाण पत्र सेटिंग" में Google Sheet Web App URL डालें।</span>'; return; }
+  if (!SHEET_KEY){ st.innerHTML = '<span style="color:var(--danger)">Google Sheet पढ़ने की कुंजी भरें।</span>'; return; }
+  $("#btnSheetImport").disabled = true; st.textContent = "Google Sheet से डेटा आ रहा है…";
+  try {
+    const r = await fetch(u + "?key=" + encodeURIComponent(SHEET_KEY) + "&t=" + Date.now());
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error === "unauthorized" ? "कुंजी गलत है" : (j.error || "Sheet से जवाब नहीं मिला"));
+    const S = v => v == null ? "" : String(v);
+    const list = (j.rows || []).filter(x => x.appNo && x.name).map(x => ({ appNo:S(x.appNo), appDate:S(x.appDate).slice(0,10), rcptNo:S(x.rcptNo), payDate:S(x.payDate).slice(0,10),
+      name:S(x.name), father:S(x.father), dob:S(x.dob).slice(0,10), gender:S(x.gender), mobile:S(x.mobile), email:S(x.email), cat:S(x.cat), edu:S(x.edu), address:S(x.address),
+      trade:S(x.trade), tradeId:S(x.tradeId), batch:S(x.batch), duration:S(x.duration), fee:+x.fee||0, discount:+x.discount||0, amount:+x.amount||0, payId:S(x.payId), extra:S(x.extra) }));
+    if (!list.length){ st.textContent = "Google Sheet में अभी कोई आवेदन नहीं है।"; $("#btnSheetImport").disabled = false; return; }
+    st.textContent = `${list.length} आवेदन मिले, रजिस्टर में दर्ज हो रहे हैं…`;
+    const n = await saveApps(list);
+    const paid = list.filter(x => x.payId).length;
+    st.textContent = `${n} आवेदन रजिस्टर में दर्ज/अपडेट हो गए (${paid} भुगतान व रसीद सहित)। "सत्यापित" का निशान पहले जैसा रहेगा।`;
+    if (dbNS){ /* snapshot refreshes */ } else if (!$("#sub-apps").hidden) renderApps();
+  } catch(e){ st.innerHTML = `<span style="color:var(--danger)">Google Sheet से नहीं मिल सका: ${esc(e?.message||"error")}</span>`; }
+  $("#btnSheetImport").disabled = false;
 });
 
 /* ---------- boot ---------- */
