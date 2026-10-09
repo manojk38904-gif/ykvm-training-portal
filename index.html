@@ -12,7 +12,7 @@
 <title>YKVM प्रशिक्षण पोर्टल</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Mukta:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Mukta:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 /* Layout: left rail (logo + fee payment desk + verify) beside a tabbed main column; rail stacks on top at phone width */
 :root{
@@ -628,10 +628,10 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
             <label class="f"><span>TAN नंबर (रसीद पर छपेगा)</span><input id="c_tan" class="mono" placeholder="उपलब्ध हो तो भरें"></label>
             <label class="f"><span>सत्यापन पेज का लिंक (QR में)</span><input id="c_verify" class="mono" placeholder="इस पोर्टल का साझा लिंक"></label>
             <label class="f"><span>प्रमाण पत्र पर स्थान</span><input id="c_place"></label>
-            <label class="f"><span>हस्ताक्षर 1: नाम</span><input id="c_s1n"></label>
-            <label class="f"><span>हस्ताक्षर 1: पद</span><input id="c_s1t"></label>
-            <label class="f"><span>हस्ताक्षर 2: नाम</span><input id="c_s2n"></label>
-            <label class="f"><span>हस्ताक्षर 2: पद</span><input id="c_s2t"></label>
+            <label class="f"><span>रसीद पर हस्ताक्षर: नाम</span><input id="c_s1n"></label>
+            <label class="f"><span>रसीद पर हस्ताक्षर: पद</span><input id="c_s1t"></label>
+            <label class="f"><span>प्रमाण पत्र पर हस्ताक्षर: नाम</span><input id="c_cn" placeholder="मनोज कुमार"></label>
+            <label class="f"><span>प्रमाण पत्र पर हस्ताक्षर: पद</span><input id="c_ct" placeholder="निदेशक / मुख्य कार्यकारी अधिकारी"></label>
           </div>
         </div>
         <div class="panel" id="pwPanel" hidden>
@@ -680,7 +680,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610100030";
+const BUILD = "202610100110";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
@@ -959,7 +959,7 @@ const IMG = {};
 function loadImg(src){ return IMG[src] || (IMG[src] = new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; })); }
 async function fontsReady(){
   try { await Promise.all([
-    document.fonts.load('400 40px "Tiro Devanagari Hindi"'), document.fonts.load('600 30px "Mukta"'),
+    document.fonts.load('400 40px "Tiro Devanagari Hindi"'), document.fonts.load('italic 400 40px "Tiro Devanagari Hindi"'), document.fonts.load('500 30px "Mukta"'), document.fonts.load('600 30px "Mukta"'),
     document.fonts.load('700 30px "Mukta"'), document.fonts.load('400 30px "Mukta"'), document.fonts.load('600 24px "IBM Plex Mono"')
   ]); } catch(e){}
 }
@@ -1055,62 +1055,77 @@ async function drawReceipt(a){
 async function drawCertificate(cert){
   await fontsReady();
   const W = 2339, H = 1654, c = document.createElement("canvas"); c.width = W; c.height = H;
-  const x = c.getContext("2d"), ink = "#13302C", teal = "#0E7681", gold = "#C9881A", muted = "#56685F";
+  const x = c.getContext("2d");
+  const navy = "#14215C", navy2 = "#1E3384", royal = "#3553C4", gold = "#D2A52C", goldD = "#A87B12", ink = "#1A2340", muted = "#4E5672";
   const S = PORTAL?.settings || {};
-  // ground
-  const g = x.createRadialGradient(W/2,H/2,200,W/2,H/2,1400); g.addColorStop(0,"#FFFDF6"); g.addColorStop(1,"#F7EED8");
-  x.fillStyle = g; x.fillRect(0,0,W,H);
-  // watermark star
-  x.globalAlpha = .06; star(x, W/2, H/2+40, 560, 400, 9, gold); x.globalAlpha = 1;
-  // borders
-  x.lineWidth = 26; x.strokeStyle = teal; x.strokeRect(40,40,W-80,H-80);
-  x.lineWidth = 4; x.strokeStyle = gold; x.strokeRect(78,78,W-156,H-156);
-  x.lineWidth = 1.5; x.strokeRect(92,92,W-184,H-184);
-  [[92,92],[W-92,92],[92,H-92],[W-92,H-92]].forEach(([cx,cy]) => star(x,cx,cy,40,20,9,gold));
-  // header
-  const logo = await loadImg("img/logo.png"); if (logo) x.drawImage(logo, 170, 150, 230, 230);
-  x.textAlign = "center"; x.fillStyle = ink;
-  x.font = '400 100px "Tiro Devanagari Hindi"'; x.fillText(ORG.hi, W/2+60, 255);
-  x.font = '600 40px "Mukta"'; x.fillStyle = teal; x.fillText("YUVA KAUSHAL VIKAS MANDAL, HAMIRPUR (U.P.)", W/2+60, 315);
-  x.font = '400 29px "Mukta"'; x.fillStyle = muted;
-  x.fillText(`पंजीकृत सोसाइटी ${ORG.reg}  ·  NGO दर्पण ${ORG.darpan}  ·  PAN ${ORG.pan}`, W/2+60, 362);
-  // ribbon
-  x.fillStyle = gold; const rw = 1000, rx = W/2-rw/2, ry = 420;
-  x.beginPath(); x.moveTo(rx-40, ry); x.lineTo(rx+rw+40, ry); x.lineTo(rx+rw+10, ry+55); x.lineTo(rx+rw+40, ry+110); x.lineTo(rx-40, ry+110); x.lineTo(rx-10, ry+55); x.closePath(); x.fill();
-  x.fillStyle = "#1E1404"; x.font = '400 70px "Tiro Devanagari Hindi"'; x.fillText("प्रशिक्षण प्रमाण पत्र", W/2, ry+80);
-  x.fillStyle = muted; x.font = '600 32px "Mukta"'; x.fillText("C E R T I F I C A T E   O F   T R A I N I N G", W/2, ry+170);
+  const logo = await loadImg("img/logo-t.png") || await loadImg("img/logo.png");
+  // ground: soft silver paper
+  let g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#F7F8FB"); g.addColorStop(.55, "#EEF0F5"); g.addColorStop(1, "#DFE3EC");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  // silver facets in the lower field (like folded paper)
+  x.fillStyle = "rgba(160,168,190,.10)"; x.beginPath(); x.moveTo(0, 470); x.lineTo(W/2, 760); x.lineTo(0, H); x.closePath(); x.fill();
+  x.fillStyle = "rgba(255,255,255,.55)"; x.beginPath(); x.moveTo(W, 470); x.lineTo(W/2, 760); x.lineTo(W, H); x.closePath(); x.fill();
+  // watermark emblem
+  if (logo){ x.globalAlpha = .05; const ws = 620; x.drawImage(logo, W/2 - ws/2, 900 - ws/2 + 60, ws, ws * logo.height / logo.width); x.globalAlpha = 1; }
+  // chevron header: royal stripe under a navy band
+  const apex = 640, side = 400;
+  x.fillStyle = royal; x.beginPath(); x.moveTo(0,0); x.lineTo(W,0); x.lineTo(W, side+44); x.lineTo(W/2, apex+44); x.lineTo(0, side+44); x.closePath(); x.fill();
+  x.fillStyle = "#C9D2EE"; x.beginPath(); x.moveTo(0, side+44); x.lineTo(W/2, apex+44); x.lineTo(W, side+44); x.lineTo(W, side+52); x.lineTo(W/2, apex+52); x.lineTo(0, side+52); x.closePath(); x.fill();
+  g = x.createLinearGradient(0, 0, 0, apex); g.addColorStop(0, "#0E1747"); g.addColorStop(1, navy2);
+  x.fillStyle = g; x.beginPath(); x.moveTo(0,0); x.lineTo(W,0); x.lineTo(W, side); x.lineTo(W/2, apex); x.lineTo(0, side); x.closePath(); x.fill();
+  // light sweep across the band
+  g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(.5, "rgba(255,255,255,.07)"); g.addColorStop(1, "rgba(255,255,255,0)");
+  x.fillStyle = g; x.beginPath(); x.moveTo(0,0); x.lineTo(W,0); x.lineTo(W, side); x.lineTo(W/2, apex); x.lineTo(0, side); x.closePath(); x.fill();
+  // frame: outer navy hairline + gold rule (runs over the band, as on formal certificates)
+  x.strokeStyle = navy; x.lineWidth = 10; x.strokeRect(14, 14, W-28, H-28);
+  x.strokeStyle = gold; x.lineWidth = 5; x.strokeRect(62, 62, W-124, H-124);
+  x.lineWidth = 1.5; x.strokeRect(76, 76, W-152, H-152);
+  // header text
+  if (logo){ const lh = 250, lw = lh * logo.width / logo.height; x.drawImage(logo, 150, 95, lw, lh); }
+  x.textAlign = "center"; x.fillStyle = "#FFFFFF";
+  x.font = '400 104px "Tiro Devanagari Hindi"'; x.fillText(ORG.hi, W/2 + 40, 205);
+  x.font = '600 44px "Mukta"'; x.fillStyle = "#E9EDFB"; x.fillText("YUVA KAUSHAL VIKAS MANDAL, HAMIRPUR (U.P.)", W/2 + 40, 268);
+  x.font = '400 29px "Mukta"'; x.fillStyle = "#B9C3E6";
+  x.fillText(`पंजीकृत सोसाइटी ${ORG.reg}  ·  NGO दर्पण ${ORG.darpan}  ·  PAN ${ORG.pan}`, W/2 + 40, 318);
+  // title on the chevron
+  x.fillStyle = gold; x.font = '400 78px "Tiro Devanagari Hindi"'; x.fillText("प्रशिक्षण प्रमाण पत्र", W/2, 432);
+  x.strokeStyle = gold; x.lineWidth = 2;
+  [[W/2-470, W/2-330], [W/2+330, W/2+470]].forEach(([a,b]) => { x.beginPath(); x.moveTo(a, 408); x.lineTo(b, 408); x.stroke(); });
+  star(x, W/2-485, 408, 14, 6, 5, gold); star(x, W/2+485, 408, 14, 6, 5, gold);
+  x.fillStyle = "#D9E0F7"; x.font = '600 30px "Mukta"'; x.fillText("C E R T I F I C A T E   O F   T R A I N I N G", W/2, 490);
   // body
-  x.fillStyle = muted; x.font = '400 40px "Mukta"'; x.fillText("प्रमाणित किया जाता है कि", W/2, 700);
-  x.fillStyle = ink; x.font = '400 92px "Tiro Devanagari Hindi"'; x.fillText(cert.name, W/2, 810);
-  x.strokeStyle = gold; x.lineWidth = 3; const nw = Math.min(1500, x.measureText(cert.name).width + 160);
-  x.beginPath(); x.moveTo(W/2-nw/2, 838); x.lineTo(W/2+nw/2, 838); x.stroke();
-  x.font = '400 42px "Mukta"'; x.fillStyle = ink;
-  const line1 = `पिता / पति: ${cert.father}${cert.village ? "  ·  निवासी: " + cert.village : ""}  ·  पंजीकरण सं.: ${cert.reg}`;
-  x.fillText(line1, W/2, 910);
+  x.fillStyle = muted; x.font = 'italic 400 44px "Tiro Devanagari Hindi"'; x.fillText("प्रमाणित किया जाता है कि", W/2, 770);
+  x.fillStyle = navy; x.font = '700 96px "Mukta"'; x.fillText(cert.name, W/2, 878);
+  const nw = Math.min(1500, x.measureText(cert.name).width + 200);
+  x.strokeStyle = gold; x.lineWidth = 3; x.beginPath(); x.moveTo(W/2-nw/2, 905); x.lineTo(W/2+nw/2, 905); x.stroke();
+  x.font = '500 42px "Mukta"'; x.fillStyle = ink;
+  x.fillText(`पिता / पति: ${cert.father}${cert.village ? "  ·  निवासी: " + cert.village : ""}  ·  पंजीकरण सं.: ${cert.reg}`, W/2, 975);
   const body = `ने संस्था द्वारा आयोजित ${cert.duration} के "${cert.trade}" प्रशिक्षण कार्यक्रम में दिनांक ${fmtDate(cert.start)} से ${fmtDate(cert.end)} तक सफलतापूर्वक भाग लेकर प्रशिक्षण पूर्ण किया${cert.grade ? " तथा ग्रेड " + cert.grade + " प्राप्त किया" : ""}।`;
-  x.font = '400 46px "Mukta"'; const n = wrap(x, body, W/2, 985, 1750, 66, "center");
-  x.fillStyle = muted; x.font = '400 30px "Mukta"';
-  wrap(x, `This is to certify that the above named has successfully completed ${cert.tradeEn ? '"' + cert.tradeEn + '"' : "the"} training (${cert.duration}) organised by Yuva Kaushal Vikas Mandal.`, W/2, 985 + n*66 + 20, 1700, 42, "center");
-  // footer: QR + ids
-  const fy = 1260;
-  drawQR(x, `YKVM CERTIFICATE\nSerial: ${cert.serial}\nCode: ${cert.code}\nReg: ${cert.reg}\nName: ${cert.nameEn || ""}\nVerify: ${S.verifyUrl || "ykvmup.org"}`, 190, fy, 230);
-  x.textAlign = "left"; x.fillStyle = ink; x.font = '600 30px "IBM Plex Mono"';
-  x.fillText(`Serial No : ${cert.serial}`, 450, fy+50);
-  x.fillText(`Verify Code: ${cert.code}`, 450, fy+100);
-  x.fillText(`Reg. No   : ${cert.reg}`, 450, fy+150);
+  x.fillStyle = ink; x.font = '400 46px "Mukta"'; const n = wrap(x, body, W/2, 1048, 1780, 64, "center");
+  x.fillStyle = muted; x.font = 'italic 400 33px "Tiro Devanagari Hindi"';
+  wrap(x, `This is to certify that the above named has successfully completed ${cert.tradeEn ? '"' + cert.tradeEn + '"' : "the"} training (${cert.duration}) organised by Yuva Kaushal Vikas Mandal.`, W/2, 1048 + n*64 + 18, 1700, 44, "center");
+  // footer
+  const fy = 1290;
+  x.fillStyle = "#FFFFFF"; x.fillRect(150, fy-12, 254, 254); x.strokeStyle = "#C9D2EE"; x.lineWidth = 2; x.strokeRect(150, fy-12, 254, 254);
+  drawQR(x, `YKVM CERTIFICATE\nSerial: ${cert.serial}\nCode: ${cert.code}\nReg: ${cert.reg}\nName: ${cert.nameEn || ""}\nVerify: ${S.verifyUrl || "ykvmup.org"}`, 162, fy, 230);
+  x.textAlign = "left"; x.fillStyle = navy; x.font = '600 30px "IBM Plex Mono"';
+  x.fillText(`Serial No : ${cert.serial}`, 440, fy+45);
+  x.fillText(`Verify Code: ${cert.code}`, 440, fy+95);
+  x.fillText(`Reg. No   : ${cert.reg}`, 440, fy+145);
   x.font = '400 28px "Mukta"'; x.fillStyle = muted;
-  x.fillText(`दिनांक: ${fmtDate(cert.issue)}  ·  स्थान: ${S.certPlace || "मौदहा, हमीरपुर"}`, 450, fy+205);
-  // seal
-  if (logo) x.drawImage(logo, 1430-125, fy-15, 250, 250);
-  x.textAlign = "center";
+  x.fillText(`दिनांक: ${fmtDate(cert.issue)}  ·  स्थान: ${S.certPlace || "मौदहा, हमीरपुर"}`, 440, fy+200);
+  // seal: emblem inside a gold ring
+  const sx0 = 1350, sy0 = fy + 110;
+  x.beginPath(); x.arc(sx0, sy0, 128, 0, Math.PI*2); x.fillStyle = "rgba(255,255,255,.85)"; x.fill();
+  x.lineWidth = 6; x.strokeStyle = gold; x.stroke(); x.beginPath(); x.arc(sx0, sy0, 116, 0, Math.PI*2); x.lineWidth = 1.5; x.strokeStyle = goldD; x.stroke();
+  if (logo){ const lh = 190, lw = lh * logo.width / logo.height; x.drawImage(logo, sx0 - lw/2, sy0 - lh/2, lw, lh); }
+  // single signature
+  x.textAlign = "center"; const sgx = 1960;
   const sign = await loadImg("img/sign.png");
-  if (sign){ const sw = 290, sh = sw * sign.height / sign.width; x.drawImage(sign, 2090-sw/2, fy+130-sh+14, sw, sh); }
-  // signatures
-  [[1790, S.sign2Name, S.sign2Title], [2090, S.sign1Name, S.sign1Title]].forEach(([sx,nm,tt]) => {
-    x.strokeStyle = ink; x.lineWidth = 2; x.beginPath(); x.moveTo(sx-150, fy+130); x.lineTo(sx+150, fy+130); x.stroke();
-    x.fillStyle = ink; x.font = '600 32px "Mukta"'; x.fillText(nm || "", sx, fy+175);
-    x.fillStyle = muted; x.font = '400 27px "Mukta"'; x.fillText(tt || "", sx, fy+212);
-  });
+  if (sign){ const sw = 330, sh = sw * sign.height / sign.width; x.drawImage(sign, sgx - sw/2, fy + 132 - sh + 10, sw, sh); }
+  x.strokeStyle = navy; x.lineWidth = 2; x.beginPath(); x.moveTo(sgx-220, fy+135); x.lineTo(sgx+220, fy+135); x.stroke();
+  x.fillStyle = navy; x.font = '700 36px "Mukta"'; x.fillText(S.certSignName || "मनोज कुमार", sgx, fy+182);
+  x.fillStyle = muted; x.font = '500 29px "Mukta"'; x.fillText(S.certSignTitle || "निदेशक / मुख्य कार्यकारी अधिकारी", sgx, fy+222);
   x.textAlign = "left"; return c;
 }
 
@@ -1311,7 +1326,7 @@ $("#btnRegCsv").addEventListener("click", () => {
 });
 
 /* config editor */
-const CFG = [["c_sheet","sheetUrl"],["c_page","paymentPageUrl"],["c_rzp","razorpayLink"],["c_wa","orgWhatsApp"],["c_mail","orgEmail"],["c_tan","tan"],["c_verify","verifyUrl"],["c_place","certPlace"],["c_s1n","sign1Name"],["c_s1t","sign1Title"],["c_s2n","sign2Name"],["c_s2t","sign2Title"]];
+const CFG = [["c_sheet","sheetUrl"],["c_page","paymentPageUrl"],["c_rzp","razorpayLink"],["c_wa","orgWhatsApp"],["c_mail","orgEmail"],["c_tan","tan"],["c_verify","verifyUrl"],["c_place","certPlace"],["c_s1n","sign1Name"],["c_s1t","sign1Title"],["c_cn","certSignName"],["c_ct","certSignTitle"]];
 let DRAFT = null;
 function renderCfg(){
   if (!DRAFT) DRAFT = JSON.parse(JSON.stringify(PORTAL));
