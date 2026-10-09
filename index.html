@@ -679,7 +679,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610090953";
+const BUILD = "202610091756";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
@@ -1585,7 +1585,7 @@ function renderReports(){
     .map(([k,v]) => `<div><b>${v}</b><span>${k}</span></div>`).join("");
   $("#rptDaily").innerHTML = R.dailyRows.length ? `<div class="tablewrap" style="max-height:360px"><table><thead><tr><th>दिनांक</th><th style="text-align:right">आवेदन</th><th style="text-align:right">भुगतान</th><th style="text-align:right">राशि ₹</th><th style="text-align:right">सत्यापित</th></tr></thead><tbody>
     ${R.dailyRows.map(r => `<tr><td class="mono">${fmtDate(r.date)}</td><td class="num mono">${r.apps}</td><td class="num mono">${r.paid}</td><td class="num mono">${inr(r.amount)}</td><td class="num mono">${r.verified}</td></tr>`).join("")}
-    </tbody></table></div>` : '<p class="muted">इस चयन में कोई आवेदन नहीं।</p>';
+    </tbody></table></div>` : `<p class="muted">इस चयन में कोई आवेदन नहीं।${APPS.length ? ` रजिस्टर में कुल ${APPS.length} आवेदन हैं; ऊपर ट्रेड/बैच "सभी" करके देखें।` : ""}</p>`;
   $("#rptTrained").innerHTML = R.trainedRows.length ? `<div class="tablewrap" style="max-height:360px"><table><thead><tr><th>ट्रेड</th><th>बैच</th><th>प्रारम्भ</th><th>समापन</th><th>अवधि</th><th style="text-align:right">दिन</th><th style="text-align:right">प्रशिक्षित</th></tr></thead><tbody>
     ${R.trainedRows.map(r => `<tr><td>${esc(r.trade)}</td><td>${esc(r.batch)}</td><td class="mono">${fmtDate(r.start)}</td><td class="mono">${fmtDate(r.end)}</td><td>${esc(r.duration)}</td><td class="num mono">${daysBetween(r.start, r.end)}</td><td class="num mono">${r.count}</td></tr>`).join("")}
     </tbody></table></div>` : '<p class="muted">इस चयन में अभी किसी बैच का प्रशिक्षण पूर्ण दर्ज नहीं। प्रमाण पत्र जारी होते ही बैच यहाँ दिखेगा।</p>';
@@ -1596,10 +1596,11 @@ function renderReports(){
 function renderApps(){ fillXFilters(); renderAppTable(); renderReports(); }
 function renderAppTable(){
   const list = filteredApps(), sum = list.reduce((s,a) => s + (Number(a.amount)||0), 0);
-  $("#appCount").textContent = `${list.length} आवेदन · कुल ₹${inr(sum)}`;
+  $("#appCount").textContent = `${list.length} आवेदन · कुल ₹${inr(sum)}` + (list.length !== APPS.length ? ` (रजिस्टर में कुल ${APPS.length})` : "");
   $("#appTable").innerHTML = list.length ? `<div class="tablewrap" style="max-height:460px"><table><thead><tr><th>सत्यापित</th><th>आवेदन सं.</th><th>नाम</th><th>मोबाइल</th><th>ट्रेड</th><th>बैच</th><th>अवधि</th><th style="text-align:right">शुल्क</th><th style="text-align:right">छूट</th><th style="text-align:right">भुगतान</th><th>Razorpay ID</th><th>तिथि</th></tr></thead><tbody>
     ${list.map(a => `<tr><td><input type="checkbox" data-ver="${esc(a._id)}" ${a.verified?"checked":""} aria-label="भुगतान सत्यापित"></td><td class="mono">${esc(a.appNo)}</td><td>${esc(a.name)}</td><td class="mono">${esc(a.mobile)}</td><td>${esc(a.trade)}</td><td>${esc(a.batch)}</td><td>${esc(a.duration)}</td><td class="num mono">${inr(a.fee)}</td><td class="num mono">${inr(a.discount)}</td><td class="num mono">${inr(a.amount)}</td><td class="mono">${esc(a.payId)}</td><td class="mono">${fmtDate(a.payDate)}</td></tr>`).join("")}
-    </tbody></table></div><p class="muted" style="font-size:.88rem">Razorpay डैशबोर्ड से भुगतान मिलान के बाद "सत्यापित" पर टिक करें।</p>` : '<p class="muted">अभी कोई आवेदन रजिस्टर में नहीं है। ऊपर WhatsApp संदेश चिपकाकर पहला आवेदन जोड़ें।</p>';
+    </tbody></table></div><p class="muted" style="font-size:.88rem">Razorpay डैशबोर्ड से भुगतान मिलान के बाद "सत्यापित" पर टिक करें।</p>` : (APPS.length ? `<p class="note warn">ऊपर चुने गए ट्रेड/बैच/तिथि में कोई आवेदन नहीं है। रजिस्टर में कुल <b>${APPS.length}</b> आवेदन हैं। <button class="btn btn-soft btn-sm" type="button" id="btnClearX">सभी ट्रेड व बैच दिखाएँ</button></p>` : '<p class="muted">अभी कोई आवेदन रजिस्टर में नहीं है। ऊपर "Google Sheet से रजिस्टर अपडेट करें" दबाएँ या WhatsApp संदेश चिपकाकर आवेदन जोड़ें।</p>');
+  const cx = $("#btnClearX"); if (cx) cx.onclick = () => { $("#x_trade").value = ""; fillXBatch(); $("#x_batch").value = ""; $("#x_from").value = ""; $("#x_to").value = ""; renderAppTable(); renderReports(); };
 }
 document.addEventListener("change", async e => {
   const id = e.target.dataset?.ver; if (!id || !(dbNS || SESSION)) return;
