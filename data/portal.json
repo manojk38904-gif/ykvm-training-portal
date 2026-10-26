@@ -172,7 +172,7 @@
    "discount": 10500,
    "discountType": "amount",
    "duration": "15 दिन",
-   "active": false,
+   "active": true,
    "batches": [
     "01 मार्च 2026 - 15 मार्च 2026"
    ],
