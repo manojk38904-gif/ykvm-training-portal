@@ -166,16 +166,20 @@
   {
    "id": "tmvp61ojp",
    "name": "हेयर कटिंग एंव सैलून",
-   "en": "",
+   "en": "Hair Cutting and Salon",
    "code": "YKVM009",
    "fee": 11000,
    "discount": 10500,
    "discountType": "amount",
    "duration": "15 दिन",
    "active": false,
-   "batches": [],
-   "extra": [],
-   "about": "",
+   "batches": [
+    "01 मार्च 2026 - 15 मार्च 2026"
+   ],
+   "extra": [
+    "अंतिम पास कक्षा / डिग्री"
+   ],
+   "about": "हेयर कटिंग एंव सैलून",
    "payLink": "",
    "payLinkAmount": null,
    "pastBatches": []
