@@ -35,7 +35,8 @@
    "discount": 5340,
    "discountType": "amount",
    "payLink": "",
-   "payLinkAmount": null
+   "payLinkAmount": null,
+   "pastBatches": []
   },
   {
    "id": "mlf",
@@ -55,7 +56,8 @@
    "discount": 5340,
    "discountType": "amount",
    "payLink": "",
-   "payLinkAmount": null
+   "payLinkAmount": null,
+   "pastBatches": []
   },
   {
    "id": "msh",
@@ -73,7 +75,8 @@
    "discount": 5340,
    "discountType": "amount",
    "payLink": "",
-   "payLinkAmount": null
+   "payLinkAmount": null,
+   "pastBatches": []
   },
   {
    "id": "goat",
@@ -93,7 +96,8 @@
    "discount": 5340,
    "discountType": "amount",
    "payLink": "",
-   "payLinkAmount": null
+   "payLinkAmount": null,
+   "pastBatches": []
   },
   {
    "id": "tlr",
@@ -113,7 +117,8 @@
    "discount": 5340,
    "discountType": "amount",
    "payLink": "",
-   "payLinkAmount": null
+   "payLinkAmount": null,
+   "pastBatches": []
   },
   {
    "id": "cmp",
@@ -133,7 +138,8 @@
    "discount": 1000,
    "discountType": "amount",
    "payLink": "",
-   "payLinkAmount": null
+   "payLinkAmount": null,
+   "pastBatches": []
   },
   {
    "id": "tmv0l6j2y",
@@ -154,7 +160,25 @@
    ],
    "about": "फोटो ग्राफी करना , ईवेंट फोटो एंव विडिओ ग्राफी",
    "payLink": "",
-   "payLinkAmount": null
+   "payLinkAmount": null,
+   "pastBatches": []
+  },
+  {
+   "id": "tmvp61ojp",
+   "name": "हेयर कटिंग एंव सैलून",
+   "en": "",
+   "code": "YKVM009",
+   "fee": 11000,
+   "discount": 10500,
+   "discountType": "amount",
+   "duration": "15 दिन",
+   "active": false,
+   "batches": [],
+   "extra": [],
+   "about": "",
+   "payLink": "",
+   "payLinkAmount": null,
+   "pastBatches": []
   }
  ]
 }
