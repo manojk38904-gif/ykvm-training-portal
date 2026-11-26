@@ -661,7 +661,16 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
     <form id="loginForm" hidden novalidate>
       <label class="f"><span>Admin पासवर्ड</span><input id="lg_pw" type="password" autocomplete="current-password"></label>
       <p class="note err" id="lg_err" hidden></p>
-      <div class="row"><button class="btn btn-accent" type="submit" id="lg_btn">लॉगिन करें</button></div>
+      <div class="row" style="justify-content:space-between;align-items:center"><button class="btn btn-accent" type="submit" id="lg_btn">लॉगिन करें</button><button class="linkbtn" type="button" id="btnForgot">पासवर्ड भूल गए?</button></div>
+    </form>
+    <form id="resetForm" hidden novalidate>
+      <p class="note" style="font-size:.9rem"><b>पासवर्ड रीसेट:</b> पुष्टि के लिए GitHub का एक नया Fine-grained token बनाएँ जिसे केवल <b>ykvm-training-portal</b> repository पर <b>Contents: Read and write</b> की अनुमति हो (<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">यहाँ बनाएँ</a>)। यह टोकन केवल repository का मालिक बना सकता है, इसलिए इससे आपकी पहचान पक्की होती है। फिर नया पासवर्ड चुनें।</p>
+      <p class="note" style="font-size:.86rem;background:var(--accent-soft,#fdf0dc)">ध्यान दें: पुराना पासवर्ड न होने से एन्क्रिप्टेड आवेदन रजिस्टर और Google Sheet कुंजी खुल नहीं सकतीं। उनकी कॉपी <code>data/backup/</code> में सुरक्षित रख दी जाएगी। रीसेट के बाद "भुगतान व प्रमाण पत्र सेटिंग" में Google Sheet कुंजी दोबारा डालें और "Google Sheet से रजिस्टर अपडेट करें" दबाएँ — सारे आवेदन फिर से आ जाएँगे। ट्रेड, शुल्क, छूट और जारी प्रमाण पत्र पर कोई असर नहीं होगा।</p>
+      <label class="f"><span>नया GitHub token</span><input id="rs_tok" type="password" autocomplete="off" class="mono" placeholder="github_pat_..."></label>
+      <label class="f"><span>नया Admin पासवर्ड (कम से कम 10 अक्षर)</span><input id="rs_pw1" type="password" autocomplete="new-password"></label>
+      <label class="f"><span>नया पासवर्ड दोबारा</span><input id="rs_pw2" type="password" autocomplete="new-password"></label>
+      <p class="note err" id="rs_err" hidden></p>
+      <div class="row" style="justify-content:space-between;align-items:center"><button class="btn btn-accent" type="submit" id="rs_btn">पासवर्ड रीसेट करें</button><button class="linkbtn" type="button" id="btnBackLogin">← लॉगिन पर वापस</button></div>
     </form>
     <form id="setupForm" hidden novalidate>
       <p class="note" style="font-size:.9rem">पहली बार सेटअप: GitHub का एक Fine-grained token बनाएँ जिसे केवल <b>ykvm-training-portal</b> repository पर <b>Contents: Read and write</b> की अनुमति हो (<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">यहाँ बनाएँ</a>)। फिर एक मज़बूत Admin पासवर्ड चुनें। टोकन इसी पासवर्ड से एन्क्रिप्ट होकर सहेजा जाएगा; आगे केवल पासवर्ड से लॉगिन होगा।</p>
@@ -680,7 +689,7 @@ footer{border-top:1px solid var(--line);padding-top:18px;font-size:.88rem;color:
 <script>
 (function(){
 "use strict";
-const BUILD = "202610100200";
+const BUILD = "202611242230";
 /* पुराना (cache में रखा) पेज खुले तो नया संस्करण अपने-आप लोड करें */
 fetch("data/version.json?t=" + Date.now(), {cache:"no-store"}).then(r => r.ok ? r.json() : null).then(v => {
   if (v && v.build && v.build !== BUILD){
@@ -718,7 +727,7 @@ if (["profile","courses","apply","verify"].includes(h)) show(h);
 /* ---------- entry gate ---------- */
 const EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
 const EYE_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 5.1A10.9 10.9 0 0 1 12 5c6.5 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.2M6.1 6.1A17.4 17.4 0 0 0 2 12s3.5 7 10 7a10.4 10.4 0 0 0 5.9-1.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>';
-["lg_pw","su_tok","su_pw1","su_pw2","np1","np2","sheetKey"].forEach(id => {
+["lg_pw","su_tok","su_pw1","su_pw2","rs_tok","rs_pw1","rs_pw2","np1","np2","sheetKey"].forEach(id => {
   const inp = document.getElementById(id); if (!inp || inp.parentElement.classList.contains("pw")) return;
   const w = document.createElement("span"); w.className = "pw"; inp.parentNode.insertBefore(w, inp); w.appendChild(inp);
   const b = document.createElement("button"); b.type = "button"; b.className = "eye"; b.innerHTML = EYE;
@@ -1813,14 +1822,21 @@ function logout(msg){
 async function openLogin(){
   if (window.claude?.use) return;
   const m = $("#loginModal"); m.hidden = false;
-  $("#loginWait").hidden = false; $("#loginForm").hidden = true; $("#setupForm").hidden = true; $("#lg_err").hidden = true; $("#su_err").hidden = true;
+  $("#loginWait").hidden = false; $("#loginForm").hidden = true; $("#setupForm").hidden = true; $("#resetForm").hidden = true; $("#lg_err").hidden = true; $("#su_err").hidden = true; $("#rs_err").hidden = true;
   let exists = true;
   try { const r = await fetch(ADMIN_FILE + "?t=" + Date.now(), { cache:"no-store" }); exists = r.ok; } catch(e){ exists = true; }
   $("#loginWait").hidden = true;
   if (exists){ $("#loginTitle").textContent = "Admin Login / प्रबंधन"; $("#loginForm").hidden = false; setTimeout(() => $("#lg_pw").focus(), 30); }
   else { $("#loginTitle").textContent = "Admin सेटअप (पहली बार)"; $("#setupForm").hidden = false; setTimeout(() => $("#su_tok").focus(), 30); }
 }
-function closeLogin(){ $("#loginModal").hidden = true; $("#lg_pw").value = ""; $("#su_tok").value = ""; $("#su_pw1").value = ""; $("#su_pw2").value = ""; }
+function closeLogin(){ $("#loginModal").hidden = true; ["lg_pw","su_tok","su_pw1","su_pw2","rs_tok","rs_pw1","rs_pw2"].forEach(id => { const el = document.getElementById(id); el.value = ""; el.type = "password"; }); }
+$("#btnForgot").addEventListener("click", () => {
+  $("#loginForm").hidden = true; $("#resetForm").hidden = false; $("#rs_err").hidden = true;
+  $("#loginTitle").textContent = "पासवर्ड भूल गए / रीसेट"; setTimeout(() => $("#rs_tok").focus(), 30);
+});
+$("#btnBackLogin").addEventListener("click", () => {
+  $("#resetForm").hidden = true; $("#loginForm").hidden = false; $("#loginTitle").textContent = "Admin Login / प्रबंधन"; setTimeout(() => $("#lg_pw").focus(), 30);
+});
 $("#btnLoginClose").addEventListener("click", closeLogin);
 $("#loginModal").addEventListener("click", e => { if (e.target.id === "loginModal") closeLogin(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#loginModal").hidden) closeLogin(); });
@@ -1852,6 +1868,42 @@ async function writeAdminFile(token, password, dek){
   const enc = await aesEnc(await kdf(password, salt, KDF_ITER), JSON.stringify({ token, dek }));
   await ghPut(ADMIN_FILE, JSON.stringify({ v:1, kdf:"PBKDF2-SHA256", iter:KDF_ITER, salt: b64(salt), alg:"AES-GCM", ...enc }, null, 1), "Admin लॉगिन सेटिंग अपडेट", token);
 }
+async function ghDel(path, message, token){
+  const cur = await ghGet(path, token); if (!cur) return;
+  const r = await gh(`/repos/${GH.owner}/${GH.repo}/contents/${path}`, { method:"DELETE", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ message, sha: cur.sha, branch: GH.branch }) }, token);
+  if (!r.ok) throw Object.assign(new Error(`GitHub में पुरानी फ़ाइल हटाई नहीं जा सकी (${r.status})`), { status:r.status });
+}
+$("#resetForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = $("#rs_err"), btn = $("#rs_btn"), tok = $("#rs_tok").value.trim(), p1 = $("#rs_pw1").value, p2 = $("#rs_pw2").value;
+  err.hidden = true;
+  const fail = m => { err.textContent = m; err.hidden = false; };
+  if (!tok) return fail("GitHub token भरें।");
+  if (p1.length < 10) return fail("पासवर्ड कम से कम 10 अक्षर का रखें।");
+  if (p1 !== p2) return fail("दोनों पासवर्ड एक जैसे नहीं हैं।");
+  btn.disabled = true; btn.textContent = "रीसेट हो रहा है…";
+  try {
+    let ok = false; try { ok = await verifyToken(tok); } catch(x){ ok = false; }
+    if (!ok) throw new Error("यह टोकन मान्य नहीं है या इसे ykvm-training-portal में लिखने की अनुमति नहीं है। Contents: Read and write वाला टोकन बनाएँ।");
+    const stamp = new Date().toISOString().replace(/[-:]/g,"").replace("T","-").slice(0,15);
+    let backedUp = 0;
+    for (const f of [APPS_FILE, "data/sheet.enc.json"]){
+      const cur = await ghGet(f, tok); if (!cur) continue;
+      const name = f.split("/").pop().replace(".json", `.${stamp}.json`);
+      await ghPut(`data/backup/${name}`, cur.text, "पासवर्ड रीसेट: पुरानी एन्क्रिप्टेड फ़ाइल का बैकअप", tok);
+      await ghDel(f, "पासवर्ड रीसेट: पुरानी कुंजी वाली फ़ाइल हटाई", tok);
+      backedUp++;
+    }
+    const dek = b64(crypto.getRandomValues(new Uint8Array(32)));
+    await writeAdminFile(tok, p1, dek);
+    FAILS = 0; LOCK_UNTIL = 0;
+    SESSION = { token: tok, dek, last: Date.now() }; saveSession();
+    closeLogin(); enterAdmin(); show("admin"); sub("cfg");
+    const st = $("#sheetStatus");
+    if (st) st.innerHTML = '<span style="color:var(--ok,#1b7a3a)">पासवर्ड रीसेट हो गया।</span>' + (backedUp ? ' अब यहाँ Google Sheet कुंजी दोबारा डालकर सहेजें, फिर "रिपोर्ट, रजिस्टर व Excel" में "Google Sheet से रजिस्टर अपडेट करें" दबाएँ।' : "");
+  } catch(x){ fail(x.message || "पासवर्ड रीसेट नहीं हो सका।"); }
+  btn.disabled = false; btn.textContent = "पासवर्ड रीसेट करें";
+});
 $("#setupForm").addEventListener("submit", async e => {
   e.preventDefault();
   const err = $("#su_err"), btn = $("#su_btn"), tok = $("#su_tok").value.trim(), p1 = $("#su_pw1").value, p2 = $("#su_pw2").value;
